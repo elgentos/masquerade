@@ -5,7 +5,7 @@
 Point Masquerade to a database, give it a rule-set defined in YAML and Masquerade will anonymize the data for you 
  automatically!
  
-![masquerade screenshot](https://user-images.githubusercontent.com/431360/42535187-004838f4-848f-11e8-8ca0-71913743d5b0.png)
+![masquerade screenshot](https://user-images.githubusercontent.com/431360/42535187-004838f4-848f-11e8-8ca0-71913743d5b0.png | width=300)
  
 ### Out-of-the-box supported frameworks
 
@@ -15,7 +15,7 @@ Point Masquerade to a database, give it a rule-set defined in YAML and Masquerad
 
 You can add your own configuration files in a directory named `config` in the same directory as where you run masquerade. The configuration files will be merged with any already present configuration files for that platform, overriding any out-of-the-box values.
 
-See the Magento 2 YAML files as examples for notation. 
+See the [Magento 2 YAML files](https://github.com/elgentos/masquerade/tree/master/src/config/magento2) as examples for notation. 
 
 For formatters, you can use all default [Faker formatters](https://github.com/fzaninotto/Faker#formatters). 
  
@@ -24,7 +24,7 @@ For formatters, you can use all default [Faker formatters](https://github.com/fz
 Download the phar file;
 
 ```
-wget 
+wget https://github.com/elgentos/masquerade/raw/master/dist/masquerade.phar 
 ```
 
 ### Usage
