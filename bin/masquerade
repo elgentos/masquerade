@@ -4,10 +4,12 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Elgentos\Masquerade\Console\ListCommand;
+use Elgentos\Masquerade\Console\RunCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 
 $application->add(new ListCommand);
+$application->add(new RunCommand);
 
 $application->run();

@@ -11,12 +11,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ListCommand extends Command
 {
+    protected $config;
+    protected $input;
+    protected $output;
+    protected $platformName;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'masquerade:list';
+    protected $name = 'list';
 
     /**
      * The console command description.
@@ -36,31 +41,39 @@ class ListCommand extends Command
     /**
      * Execute the console command.
      *
+     * @param InputInterface $input
+     * @param OutputInterface $output
      * @return mixed
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $masqueradeConfig = new Config(__DIR__ . sprintf('/config/%s/', $input->getOption('platform')));
+        $this->input = $input;
+        $this->output = $output;
 
-        print_r($masqueradeConfig);exit;
+        $this->setup();
 
-        $outputTable = new Table($this->getOutput());
-
+        $outputTable = new Table($output);
         $outputTable->setHeaders(['Platform', 'Group', 'Table', 'Column', 'Formatter']);
+
         $rows = [];
-        foreach ($masqueradeConfig as $platformName => $groups) {
-            if (isset($groups['groups'])) {
-                foreach ($groups['groups'] as $groupName => $tables) {
-                    foreach ($tables as $tableName => $table) {
-                        $table['name'] = $tableName;
-                        foreach ($table['columns'] as $columnName => $column) {
-                            $rows[] = [$platformName, $groupName, $tableName, $columnName, $column['formatter']];
-                        }
-                    }
+
+        foreach ($this->config as $groupName => $tables) {
+            foreach ($tables as $tableName => $table) {
+                $table['name'] = $tableName;
+                foreach ($table['columns'] as $columnName => $column) {
+                    $rows[] = [$this->platformName, $groupName, $tableName, $columnName, $column['formatter']];
                 }
             }
         }
+
         $outputTable->setRows($rows);
         $outputTable->render();
+    }
+
+    private function setup()
+    {
+        $this->platformName = $this->input->getOption('platform');
+        $config = new Config(sprintf(__DIR__ . '/../../../config/%s', $this->platformName));
+        $this->config = $config->all();
     }
 }
