@@ -1,0 +1,9 @@
+review_detail:
+  pk: detail_id
+  columns:
+    nickname:
+      formatter: firstName
+    title:
+      formatter: sentence
+    detail:
+      formatter: paragraph
