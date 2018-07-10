@@ -5,6 +5,8 @@
 Point Masquerade to a database, give it a rule-set defined in YAML and Masquerade will anonymize the data for you 
  automatically!
  
+![image](https://user-images.githubusercontent.com/431360/42535077-ce905576-848e-11e8-8505-361a23c2ce3c.png)
+ 
 ### Out-of-the-box supported frameworks
 
 - Magento 2
