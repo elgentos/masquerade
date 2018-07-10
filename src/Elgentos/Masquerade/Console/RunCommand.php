@@ -2,6 +2,7 @@
 
 namespace Elgentos\Masquerade\Console;
 
+use Phar;
 use Symfony\Component\Console\Command\Command;
 use Noodlehaus\Config;
 use Symfony\Component\Console\Input\InputInterface;
@@ -66,13 +67,14 @@ class RunCommand extends Command
             ->setName($this->name)
             ->setDescription($this->description)
             ->addOption('platform', null, InputOption::VALUE_OPTIONAL)
+            ->addOption('driver', null, InputOption::VALUE_OPTIONAL, 'Database driver [mysql]')
             ->addOption('database', null, InputOption::VALUE_OPTIONAL)
             ->addOption('username', null, InputOption::VALUE_OPTIONAL)
             ->addOption('password', null, InputOption::VALUE_OPTIONAL)
-            ->addOption('host', null, InputOption::VALUE_OPTIONAL)
-            ->addOption('prefix', null, InputOption::VALUE_OPTIONAL)
-            ->addOption('locale', null, InputOption::VALUE_OPTIONAL)
-            ->addOption('group', null, InputOption::VALUE_OPTIONAL);
+            ->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Database host [localhost]')
+            ->addOption('prefix', null, InputOption::VALUE_OPTIONAL, 'Database prefix [empty]')
+            ->addOption('locale', null, InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
+            ->addOption('group', null, InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]');
     }
 
     /**
@@ -154,16 +156,17 @@ class RunCommand extends Command
         }
 
         // Get default config
-        $config = new Config(sprintf(__DIR__ . '/../../../config/%s', $this->platformName));
+        $config = new Config($this->getConfigFiles($this->platformName));
         $this->config = $config->all();
 
         // Get custom config
-        if (file_exists('config')) {
+        if (file_exists('config') && is_dir('config')) {
             $customConfig = new Config(sprintf('config/%s', $this->platformName));
             $this->config = array_merge($config->all(), $customConfig->all());
         }
 
         $host = $databaseConfig['host'] ?? $this->input->getOption('host') ?? 'localhost';
+        $driver = $databaseConfig['driver'] ?? $this->input->getOption('driver') ?? 'mysql';
         $database = $databaseConfig['database'] ?? $this->input->getOption('database');
         $username = $databaseConfig['username'] ?? $this->input->getOption('username');
         $password = $databaseConfig['password'] ?? $this->input->getOption('password');
@@ -185,7 +188,7 @@ class RunCommand extends Command
 
         $capsule = new Capsule;
         $capsule->addConnection([
-            'driver'    => 'mysql',
+            'driver'    => $driver,
             'host'      => $host,
             'database'  => $database,
             'username'  => $username,
@@ -227,4 +230,47 @@ class RunCommand extends Command
 
         return $this->fakerInstances[$columnName];
     }
+
+    /**
+     * @return bool
+     */
+    private function isPhar() {
+        return strlen(Phar::running()) > 0 ? true : false;
+    }
+
+    /**
+     * @param $platformName
+     * @return array
+     */
+    private function getConfigFiles($platformName)
+    {
+        if (!$this->isPhar()) {
+            return glob(__DIR__ . '/../../../config/' . $platformName . '/*.*');
+        }
+
+        // Unfortunately, glob() does not work when using a phar and hassankhan/config relies on glob.
+        // Therefore, we have to explicitly pass all config files back when using the phar
+        if ($platformName == 'magento2') {
+            $files = [
+                'pconfig/magento2/invoice.yaml',
+                'config/magento2/creditmemo.yaml',
+                'config/magento2/review.yaml',
+                'config/magento2/newsletter.yaml',
+                'config/magento2/order.yaml',
+                'config/magento2/quote.yaml',
+                'config/magento2/admin.yaml',
+                'config/magento2/email.yaml',
+                'config/magento2/customer.yaml',
+                'config/magento2/shipment.yaml'
+            ];
+
+            return array_map(function ($file) {
+                return 'phar://masquerade.phar/src/' . $file;
+            }, $files);
+        }
+
+        // No other platforms supported by default right now
+        return [];
+    }
+
 }

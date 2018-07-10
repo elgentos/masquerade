@@ -2,6 +2,7 @@
 
 namespace Elgentos\Masquerade\Console;
 
+use Phar;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Noodlehaus\Config;
@@ -70,10 +71,71 @@ class ListCommand extends Command
         $outputTable->render();
     }
 
+    /**
+     * @throws \Exception
+     */
     private function setup()
     {
-        $this->platformName = $this->input->getOption('platform');
-        $config = new Config(sprintf(__DIR__ . '/../../../config/%s', $this->platformName));
+        if (file_exists('config.yaml')) {
+            $databaseConfig = new Config('config.yaml');
+        }
+
+        $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
+
+        if (!$this->platformName) {
+            throw new \Exception('No platformName set, use option --platform or set it in config.yaml');
+        }
+
+        // Get default config
+        $config = new Config($this->getConfigFiles($this->platformName));
         $this->config = $config->all();
+
+        // Get custom config
+        if (file_exists('config') && is_dir('config')) {
+            $customConfig = new Config(sprintf('config/%s', $this->platformName));
+            $this->config = array_merge($config->all(), $customConfig->all());
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isPhar() {
+        return strlen(Phar::running()) > 0 ? true : false;
+    }
+
+    /**
+     * @param $platformName
+     * @return array
+     */
+    private function getConfigFiles($platformName)
+    {
+        if (!$this->isPhar()) {
+            return glob(__DIR__ . '/../../../config/' . $platformName . '/*.*');
+        }
+
+        // Unfortunately, glob() does not work when using a phar and hassankhan/config relies on glob.
+        // Therefore, we have to explicitly pass all config files back when using the phar
+        if ($platformName == 'magento2') {
+            $files = [
+                'config/magento2/invoice.yaml',
+                'config/magento2/creditmemo.yaml',
+                'config/magento2/review.yaml',
+                'config/magento2/newsletter.yaml',
+                'config/magento2/order.yaml',
+                'config/magento2/quote.yaml',
+                'config/magento2/admin.yaml',
+                'config/magento2/email.yaml',
+                'config/magento2/customer.yaml',
+                'config/magento2/shipment.yaml'
+            ];
+
+            return array_map(function ($file) {
+                return 'phar://masquerade.phar/src/' . $file;
+            }, $files);
+        }
+
+        // No other platforms supported by default right now
+        return [];
     }
 }
