@@ -252,7 +252,7 @@ class RunCommand extends Command
         // Therefore, we have to explicitly pass all config files back when using the phar
         if ($platformName == 'magento2') {
             $files = [
-                'pconfig/magento2/invoice.yaml',
+                'config/magento2/invoice.yaml',
                 'config/magento2/creditmemo.yaml',
                 'config/magento2/review.yaml',
                 'config/magento2/newsletter.yaml',
