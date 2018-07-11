@@ -2,16 +2,20 @@ creditmemo:
   sales_flat_creditmemo:
     columns:
       discount_description:
-        formatter: word
+        formatter:
+        name: word
       transaction_id:
-        formatter: randomNumber
+        formatter:
+          name: randomNumber
 
   sales_flat_creditmemo_comment:
     columns:
       comment:
-        formatter: sentence
+        formatter:
+          name: sentence
 
   sales_flat_creditmemo_grid:
     columns:
       billing_name:
-        formatter: name
+        formatter:
+          name: name

@@ -3,8 +3,11 @@ review:
     pk: detail_id
     columns:
       nickname:
-        formatter: firstName
+        formatter:
+          name: firstName
       title:
-        formatter: sentence
+        formatter:
+          name: sentence
       detail:
-        formatter: paragraph
+        formatter:
+          name: paragraph

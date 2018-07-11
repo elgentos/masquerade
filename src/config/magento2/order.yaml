@@ -2,66 +2,89 @@ order:
   sales_order:
     columns:
       customer_email:
-        formatter: email
+        formatter:
+          name: email
         unique: true
         nullColumnBeforeRun: true
       customer_firstname:
-        formatter: firstName
+        formatter:
+          name: firstName
       customer_lastname:
-        formatter: lastName
+        formatter:
+          name: lastName
       customer_dob:
-        formatter: dateTimeThisCentury
+        formatter:
+          name: dateTimeThisCentury
         optional: true
       customer_taxvat:
-        formatter: vat
+        formatter:
+          name: vat
         optional: true
       remote_ip:
-        formatter: ipv4
+        formatter:
+          name: ipv4
       customer_note:
-        formatter: sentence
+        formatter:
+          name: sentence
         optional: true
 
   sales_order_grid:
     columns:
       customer_email:
-        formatter: email
+        formatter:
+          name: email
         unique: true
         nullColumnBeforeRun: true
       customer_name:
-        formatter: name
+        formatter:
+          name: name
       shipping_name:
-        formatter: name
+        formatter:
+          name: name
       billing_name:
-        formatter: name
+        formatter:
+          name: name
       shipping_address:
-        formatter: address
+        formatter:
+          name: address
       billing_address:
-        formatter: address
+        formatter:
+          name: address
 
   sales_order_address:
     columns:
       email:
-        formatter: email
+        formatter:
+          name: email
         unique: true
         nullColumnBeforeRun: true
       firstname:
-        formatter: firstName
+        formatter:
+          name: firstName
       lastname:
-        formatter: lastName
+        formatter:
+          name: lastName
       company:
-        formatter: company
+        formatter:
+          name: company
         optional: true
       street:
-        formatter: streetAddress
+        formatter:
+          name: streetAddress
       city:
-        formatter: city
+        formatter:
+          name: city
       postcode:
-        formatter: postcode
+        formatter:
+          name: postcode
       telephone:
-        formatter: phoneNumber
+        formatter:
+          name: phoneNumber
       fax:
-        formatter: phoneNumber
+        formatter:
+          name: phoneNumber
         optional: true
       vat_id:
-        formatter: vat
+        formatter:
+          name: vat
         optional: true

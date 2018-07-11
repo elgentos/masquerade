@@ -2,26 +2,33 @@ invoice:
   sales_invoice:
     columns:
       customer_note:
-        formatter: sentence
+        formatter:
+          name: sentence
         optional: true
 
   sales_invoice_comment:
     columns:
       comment:
-        formatter: sentence
+        formatter:
+          name: sentence
         optional: true
 
   sales_invoice_grid:
     columns:
       customer_email:
-        formatter: email
+        formatter:
+          name: email
         unique: true
         nullColumnBeforeRun: true
       customer_name:
-        formatter: name
+        formatter:
+          name: name
       billing_name:
-        formatter: name
+        formatter:
+          name: name
       shipping_address:
-        formatter: address
+        formatter:
+          name: address
       billing_address:
-        formatter: address
+        formatter:
+          name: address

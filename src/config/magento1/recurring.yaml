@@ -2,8 +2,11 @@ recurring:
   sales_recurring_profile:
     columns:
       subscriber_name:
-        formatter: name
+        formatter:
+          name: name
       shipping_addresss_info:
-        formatter: streetAddress
+        formatter:
+          name: streetAddress
       billing_addresss_info:
-        formatter: streetAddress
+        formatter:
+          name: streetAddress
