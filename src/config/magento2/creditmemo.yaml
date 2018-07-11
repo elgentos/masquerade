@@ -2,8 +2,7 @@ creditmemo:
   sales_creditmemo:
     columns:
       customer_note:
-        formatter:
-          name: sentence
+        formatter: sentence
       transaction_id:
         formatter:
           name: randomNumber
@@ -12,25 +11,19 @@ creditmemo:
   sales_creditmemo_comment:
     columns:
       comment:
-        formatter:
-          name: sentence
+        formatter: sentence
 
   sales_creditmemo_grid:
     columns:
       customer_email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       customer_name:
-        formatter:
-          name: name
+        formatter: name
       billing_name:
-        formatter:
-          name: name
+        formatter: name
       shipping_address:
-        formatter:
-          name: address
+        formatter: address
       billing_address:
-        formatter:
-          name: address
+        formatter: address

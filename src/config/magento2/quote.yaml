@@ -2,63 +2,47 @@ quote:
   quote:
     columns:
       customer_email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       customer_firstname:
-        formatter:
-          name: firstName
+        formatter: firstName
       customer_lastname:
-        formatter:
-          name: lastName
+        formatter: lastName
       customer_dob:
-        formatter:
-          name: dateTimeThisCentury
+        formatter: dateTimeThisCentury
         optional: true
       customer_taxvat:
-        formatter:
-          name: vat
+        formatter: vat
         optional: true
       remote_ip:
-        formatter:
-          name: ipv4
+        formatter: ipv4
 
   quote_address:
     pk: address_id
     columns:
       email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       firstname:
-        formatter:
-          name: firstName
+        formatter: firstName
       lastname:
-        formatter:
-          name: lastName
+        formatter: lastName
       company:
-        formatter:
-          name: company
+        formatter: company
         optional: true
       street:
-        formatter:
-          name: streetAddress
+        formatter: streetAddress
       city:
-        formatter:
-          name: city
+        formatter: city
       postcode:
-        formatter:
-          name: postcode
+        formatter: postcode
       telephone:
-        formatter:
-          name: phoneNumber
+        formatter: phoneNumber
       fax:
-        formatter:
-          name: phoneNumber
+        formatter: phoneNumber
         optional: true
       vat_id:
-        formatter:
-          name: vat
+        formatter: vat
         optional: true

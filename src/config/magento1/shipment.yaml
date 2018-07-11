@@ -2,8 +2,7 @@ shipment:
   sales_flat_shipment_comment:
     columns:
       comment:
-        formatter:
-          name: sentence
+        formatter: sentence
         optional: true
 
   sales_flat_shipment_grid:
@@ -16,5 +15,4 @@ shipment:
   sales_flat_shipment_track:
     columns:
       track_number:
-        formatter:
-          name: randomNumber
+        formatter: randomNumber

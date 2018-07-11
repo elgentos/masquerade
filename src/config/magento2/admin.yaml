@@ -3,21 +3,16 @@ admin:
     pk: user_id
     columns:
       firstname:
-        formatter:
-          name: firstName
+        formatter: firstName
       lastname:
-        formatter:
-          name: lastName
+        formatter: lastName
       email:
-        formatter:
-          name: email
+        formatter: email
         nullColumnBeforeRun: true
         unique: true
       username:
-        formatter:
-          name: firstName
+        formatter: firstName
         nullColumnBeforeRun: true
         unique: true
       password:
-        formatter:
-          name: password
+        formatter: password

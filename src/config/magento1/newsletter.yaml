@@ -3,7 +3,6 @@ newsletter:
     pk: subscriber_id
     columns:
       subscriber_email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true

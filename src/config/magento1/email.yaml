@@ -2,5 +2,4 @@ email:
   core_email_queue_recipients:
     columns:
       recipient_email:
-        formatter:
-          name: email
+        formatter: email

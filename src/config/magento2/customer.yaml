@@ -2,96 +2,71 @@ customer:
   customer_entity:
     columns:
       email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       firstname:
         formatter:
         name: firstName
       lastname:
-        formatter:
-          name: lastName
+        formatter: lastName
 
   customer_address_entity:
     columns:
       firstname:
-        formatter:
-          name: firstName
+        formatter: firstName
       lastname:
-        formatter:
-          name: lastName
+        formatter: lastName
       company:
-        formatter:
-          name: company
+        formatter: company
         optional: true
       street:
-        formatter:
-          name: streetAddress
+        formatter: streetAddress
       city:
-        formatter:
-          name: city
+        formatter: city
       postcode:
-        formatter:
-          name: postcode
+        formatter: postcode
       telephone:
-        formatter:
-          name: phoneNumber
+        formatter: phoneNumber
       fax:
-        formatter:
-          name: phoneNumber
+        formatter: phoneNumber
         optional: true
 
   customer_grid_flat:
     columns:
       name:
-        formatter:
-          name: name
+        formatter: name
       firstname:
-        formatter:
-          name: firstName
+        formatter: firstName
       email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       dob:
-        formatter:
-          name: dateTimeThisCentury
+        formatter: dateTimeThisCentury
         optional: true
       billing_full:
-        formatter:
-          name: address
+        formatter: address
       shipping_full:
-        formatter:
-          name: address
+        formatter: address
       billing_firstname:
-        formatter:
-          name: firstName
+        formatter: firstName
       billing_lastname:
-        formatter:
-          name: lastName
+        formatter: lastName
       billing_telephone:
-        formatter:
-          name: phoneNumber
+        formatter: phoneNumber
       billing_postcode:
-        formatter:
-          name: postcode
+        formatter: postcode
       billing_street:
-        formatter:
-          name: streetAddress
+        formatter: streetAddress
       billing_city:
-        formatter:
-          name: city
+        formatter: city
       billing_fax:
-        formatter:
-          name: phoneNumber
+        formatter: phoneNumber
         optional: true
       billing_vat_id:
-        formatter:
-          name: vat
+        formatter: vat
         optional: true
       billing_company:
-        formatter:
-          name: company
+        formatter: company
         optional: true

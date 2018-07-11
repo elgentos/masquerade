@@ -9,15 +9,12 @@ admin:
         formatter:
         name: lastName
       email:
-        formatter:
-          name: email
+        formatter: email
         nullColumnBeforeRun: true
         unique: true
       username:
-        formatter:
-          name: firstName
+        formatter: firstName
         nullColumnBeforeRun: true
         unique: true
       password:
-        formatter:
-          name: password
+        formatter: password

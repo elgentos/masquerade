@@ -9,5 +9,4 @@ review:
         formatter:
         name: sentence
       detail:
-        formatter:
-          name: paragraph
+        formatter: paragraph
