@@ -128,7 +128,12 @@ class RunCommand extends Command
         foreach ($rows as $row) {
             $updates = [];
             foreach ($table['columns'] as $columnName => $columnData) {
-                $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$columnData['formatter']};
+                try {
+                    $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$columnData['formatter']};
+                } catch (\InvalidArgumentException $e) {
+                    // If InvalidArgumentException is thrown, formatter is not found, use null instead
+                    $updates[$columnName] = null;
+                }
             }
             $primaryKey = array_get($table, 'pk', 'entity_id');
             $this->db->table($table['name'])->where($primaryKey, $row->{$primaryKey})->update($updates);
