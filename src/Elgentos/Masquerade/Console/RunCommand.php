@@ -130,9 +130,13 @@ class RunCommand extends Command
         foreach ($rows as $row) {
             $updates = [];
             foreach ($table['columns'] as $columnName => $columnData) {
-                $options = [];
+                $formatter = array_get($columnData, 'formatter.name');
+
+                if (!$formatter) continue;
+
+                $options = array_values(array_slice(array_get($columnData, 'formatter'), 1));
                 try {
-                    $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$columnData['formatter']}(...$options);
+                    $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$formatter}(...$options);
                 } catch (\InvalidArgumentException $e) {
                     // If InvalidArgumentException is thrown, formatter is not found, use null instead
                     $updates[$columnName] = null;

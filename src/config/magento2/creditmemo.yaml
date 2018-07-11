@@ -4,6 +4,10 @@ creditmemo:
       customer_note:
         formatter:
           name: sentence
+      transaction_id:
+        formatter:
+          name: randomNumber
+          nbDigits: 8
 
   sales_creditmemo_comment:
     columns:
