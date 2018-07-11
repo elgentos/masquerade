@@ -74,7 +74,9 @@ class RunCommand extends Command
             ->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Database host [localhost]')
             ->addOption('prefix', null, InputOption::VALUE_OPTIONAL, 'Database prefix [empty]')
             ->addOption('locale', null, InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
-            ->addOption('group', null, InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]');
+            ->addOption('group', null, InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]')
+            ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]');
+
     }
 
     /**
@@ -171,6 +173,7 @@ class RunCommand extends Command
         $username = $databaseConfig['username'] ?? $this->input->getOption('username');
         $password = $databaseConfig['password'] ?? $this->input->getOption('password');
         $prefix = $databaseConfig['prefix'] ?? $this->input->getOption('prefix');
+        $charset = $databaseConfig['charset'] ?? $this->input->getOption('charset') ?? 'utf8';
 
         $errors = [];
         if (!$host) {
@@ -194,6 +197,7 @@ class RunCommand extends Command
             'username'  => $username,
             'password'  => $password,
             'prefix'    => $prefix,
+            'charset'   => $charset,
         ]);
 
         $this->db = $capsule->getConnection();
