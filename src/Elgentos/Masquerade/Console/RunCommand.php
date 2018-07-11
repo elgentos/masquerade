@@ -112,6 +112,18 @@ class RunCommand extends Command
      */
     private function fakeData($table)
     {
+        if (!$this->db->getSchemaBuilder()->hasTable($table['name'])) {
+            $this->output->writeln('Table ' . $table['name'] . ' does not exist.');
+            return;
+        }
+
+        foreach ($table['columns'] as $columnName => $columnData) {
+            if (!$this->db->getSchemaBuilder()->hasColumn($table['name'], $columnName)) {
+                unset($table['columns'][$columnName]);
+                $this->output->writeln('Column ' . $columnName . ' in table ' . $table['name'] . ' does not exist; skip it.');
+            }
+        }
+
         $this->output->writeln('');
         $this->output->writeln('Updating ' . $table['name']);
 
