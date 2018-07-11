@@ -3,16 +3,19 @@ email:
     pk: email_contact_id
     columns:
       email:
-        formatter: email
+        formatter:
+          name: email
 
   email_automation:
     pk: id
     columns:
       email:
-        formatter: email
+        formatter:
+          name: email
 
   email_campaign:
     pk: id
     columns:
       email:
-        formatter: email
+        formatter:
+          name: email

@@ -3,16 +3,21 @@ api:
     pk: user_id
     columns:
       firstname:
-        formatter: firstName
+        formatter:
+        name: firstName
       lastname:
-        formatter: lastName
+        formatter:
+        name: lastName
       email:
-        formatter: email
-        nullColumnBeforeRun: true
-        unique: true
+        formatter:
+          name: email
+          nullColumnBeforeRun: true
+          unique: true
       username:
-        formatter: firstName
-        nullColumnBeforeRun: true
-        unique: true
+        formatter:
+          name: firstName
+          nullColumnBeforeRun: true
+          unique: true
       api_key:
-        formatter: password
+        formatter:
+          name: password

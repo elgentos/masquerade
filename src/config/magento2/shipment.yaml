@@ -2,28 +2,36 @@ shipment:
   sales_shipment:
     columns:
       customer_note:
-        formatter: sentence
-        optional: true
+        formatter:
+          name: sentence
+          optional: true
 
   sales_shipment_comment:
     columns:
       comment:
-        formatter: sentence
-        optional: true
+        formatter:
+          name: sentence
+          optional: true
 
   sales_shipment_grid:
     columns:
       customer_email:
-        formatter: email
-        unique: true
-        nullColumnBeforeRun: true
+        formatter:
+          name: email
+          unique: true
+          nullColumnBeforeRun: true
       customer_name:
-        formatter: name
+        formatter:
+          name: name
       shipping_name:
-        formatter: name
+        formatter:
+          name: name
       billing_name:
-        formatter: name
+        formatter:
+          name: name
       shipping_address:
-        formatter: address
+        formatter:
+          name: address
       billing_address:
-        formatter: address
+        formatter:
+          name: address

@@ -2,24 +2,31 @@ creditmemo:
   sales_creditmemo:
     columns:
       customer_note:
-        formatter: sentence
+        formatter:
+          name: sentence
 
   sales_creditmemo_comment:
     columns:
       comment:
-        formatter: sentence
+        formatter:
+          name: sentence
 
   sales_creditmemo_grid:
     columns:
       customer_email:
-        formatter: email
-        unique: true
-        nullColumnBeforeRun: true
+        formatter:
+          name: email
+          unique: true
+          nullColumnBeforeRun: true
       customer_name:
-        formatter: name
+        formatter:
+          name: name
       billing_name:
-        formatter: name
+        formatter:
+          name: name
       shipping_address:
-        formatter: address
+        formatter:
+          name: address
       billing_address:
-        formatter: address
+        formatter:
+          name: address
