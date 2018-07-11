@@ -1,0 +1,8 @@
+newsletter:
+  newsletter_subscriber:
+    pk: subscriber_id
+    columns:
+      subscriber_email:
+        formatter: email
+        unique: true
+        nullColumnBeforeRun: true

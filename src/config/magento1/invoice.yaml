@@ -1,0 +1,11 @@
+invoice:
+  sales_flat_invoice_comment:
+    columns:
+      comment:
+        formatter: sentence
+        optional: true
+
+  sales_flat_invoice_grid:
+    columns:
+      billing_name:
+        formatter: name

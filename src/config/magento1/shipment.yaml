@@ -1,0 +1,16 @@
+shipment:
+  sales_flat_shipment_comment:
+    columns:
+      comment:
+        formatter: sentence
+        optional: true
+
+  sales_flat_shipment_grid:
+    columns:
+      shipping_name:
+        formatter: name
+
+  sales_flat_shipment_track:
+    columns:
+      track_number:
+        formatter: randomNumber

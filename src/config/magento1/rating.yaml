@@ -1,0 +1,7 @@
+rating:
+  rating_option_vote:
+    columns:
+      remote_ip:
+        formatter: ipv4
+      remote_ip_long:
+        formatter: ipv6
