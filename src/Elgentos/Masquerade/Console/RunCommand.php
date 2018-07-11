@@ -147,11 +147,16 @@ class RunCommand extends Command
                 foreach ($table['columns'] as $columnName => $columnData) {
                     $formatter = array_get($columnData, 'formatter.name');
                     $formatterData = array_get($columnData, 'formatter');
+                    $provider = false;
 
                     if (!$formatter) {
                         $formatter = $formatterData;
                         $options = [];
                     } else {
+                        if (isset($formatterData['provider'])) {
+                            $provider = array_get($formatterData, 'provider');
+                            unset($formatterData['provider']);
+                        }
                         $options = array_values(array_slice($formatterData, 1));
                     }
 
@@ -163,7 +168,7 @@ class RunCommand extends Command
                     }
 
                     try {
-                        $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$formatter}(...$options);
+                        $updates[$columnName] = $this->getFakerInstance($columnName, $columnData, $provider)->{$formatter}(...$options);
                     } catch (\InvalidArgumentException $e) {
                         // If InvalidArgumentException is thrown, formatter is not found, use null instead
                         $updates[$columnName] = null;
@@ -250,7 +255,7 @@ class RunCommand extends Command
      * @param $columnData
      * @return mixed
      */
-    private function getFakerInstance($columnName, $columnData)
+    private function getFakerInstance($columnName, $columnData, $provider = false)
     {
         if (isset($this->fakerInstances[$columnName])) {
             if (array_get($columnData, 'unique', false)) {
@@ -266,6 +271,10 @@ class RunCommand extends Command
         }
 
         $fakerInstance = FakerFactory::create($this->locale);
+
+        if ($provider && $provider instanceof \Faker\Provider\Base) {
+            $fakerInstance->addProvider(new $provider($fakerInstance));
+        }
 
         $this->fakerInstances[$columnName] = $fakerInstance;
 
