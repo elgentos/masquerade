@@ -1,0 +1,6 @@
+masquerade (20180711.080851) xenial; urgency=medium
+
+  [ Rick van de Loo ]
+  * Initial packaging
+
+ -- Rick van de Loo <vdloo@workstation4>  Fri, 11 Jul 2018 08:08:51 +0200
