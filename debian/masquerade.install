@@ -1,0 +1,3 @@
+# https://www.debian.org/doc/manuals/maint-guide/dother.en.html#install
+
+dist/masquerade.phar /usr/local/bin/

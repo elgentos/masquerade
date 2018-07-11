@@ -186,4 +186,22 @@ chmod u+x bin/masquerade
 ./bin/masquerade --help
 ```
 
+## Generating a new release changelog
+
+```
+export BRANCH=master
+export VERSION=$(date "+%Y%m%d.%H%M%S")
+gbp dch --debian-tag="%(version)s" --new-version=$VERSION --debian-branch $BRANCH --release --commit
+```
+
+### Packaging
+
+To build a deb that installs the phar in the dist directory run:
+
+```
+gbp buildpackage --git-pbuilder --git-dist=xenial --git-arch=amd64 --git-ignore-branch --git-ignore-new
+```
+
+Make sure you have a [cow environment](https://wiki.debian.org/git-pbuilder) configured for your branch and distribution. Keep in mind that the packaging does not build a new phar file, so if you want to package your local revision for testing please run `./build.sh` and copy the created `bin/masquerade` to `dist/masquerade.phar` first.
+
 #### Built by elgentos

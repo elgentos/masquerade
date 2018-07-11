@@ -1,0 +1,14 @@
+Source: masquerade
+Priority: optional
+Maintainer: Peter Jaap Blaakmeer <peterjaap@elgentos.nl>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.4
+Section: libs
+Homepage: https://github.com/elgentos/masquerade
+Vcs-Git: git@github.com:elgentos/masquerade.git
+
+Package: masquerade
+Section: libs
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Faker-driven, platform-agnostic, locale compatible data faker tool

@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+ln -sf /usr/local/bin/masquerade.phar /usr/local/bin/masquerade
+chmod +x /usr/local/bin/masquerade.phar
