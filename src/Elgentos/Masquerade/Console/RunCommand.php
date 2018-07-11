@@ -115,44 +115,47 @@ class RunCommand extends Command
         $this->output->writeln('');
         $this->output->writeln('Updating ' . $table['name']);
 
-        $rows = $this->db->table($table['name'])->get();
-
-        $progressBar = new ProgressBar($this->output, $rows->count());
+        $totalRows = $this->db->table($table['name'])->count();
+        $progressBar = new ProgressBar($this->output, $totalRows);
+        $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRows));
         $progressBar->start();
 
-        // Null columns before run to avoid integrity constrains errors
-        foreach ($table['columns'] as $columnName => $columnData) {
-            if (array_get($columnData, 'nullColumnBeforeRun', false)) {
-                $this->db->table($table['name'])->update([$columnName => null]);
-            }
-        }
+        $primaryKey = array_get($table, 'pk', 'entity_id');
 
-        foreach ($rows as $row) {
-            $updates = [];
+        $this->db->table($table['name'])->orderBy($primaryKey)->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey) {
+            // Null columns before run to avoid integrity constrains errors
             foreach ($table['columns'] as $columnName => $columnData) {
-                $formatter = array_get($columnData, 'formatter.name');
-                $formatterData = array_get($columnData, 'formatter');
-
-                if (!$formatter) {
-                    $formatter = $formatterData;
-                    $options = [];
-                } else {
-                    $options = array_values(array_slice($formatterData, 1));
-                }
-
-                if (!$formatter) continue;
-
-                try {
-                    $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$formatter}(...$options);
-                } catch (\InvalidArgumentException $e) {
-                    // If InvalidArgumentException is thrown, formatter is not found, use null instead
-                    $updates[$columnName] = null;
+                if (array_get($columnData, 'nullColumnBeforeRun', false)) {
+                    $this->db->table($table['name'])->update([$columnName => null]);
                 }
             }
-            $primaryKey = array_get($table, 'pk', 'entity_id');
-            $this->db->table($table['name'])->where($primaryKey, $row->{$primaryKey})->update($updates);
-            $progressBar->advance();
-        }
+
+            foreach ($rows as $row) {
+                $updates = [];
+                foreach ($table['columns'] as $columnName => $columnData) {
+                    $formatter = array_get($columnData, 'formatter.name');
+                    $formatterData = array_get($columnData, 'formatter');
+
+                    if (!$formatter) {
+                        $formatter = $formatterData;
+                        $options = [];
+                    } else {
+                        $options = array_values(array_slice($formatterData, 1));
+                    }
+
+                    if (!$formatter) continue;
+
+                    try {
+                        $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$formatter}(...$options);
+                    } catch (\InvalidArgumentException $e) {
+                        // If InvalidArgumentException is thrown, formatter is not found, use null instead
+                        $updates[$columnName] = null;
+                    }
+                }
+                $this->db->table($table['name'])->where($primaryKey, $row->{$primaryKey})->update($updates);
+                $progressBar->advance();
+            }
+        });
 
         $progressBar->finish();
 
@@ -294,4 +297,22 @@ class RunCommand extends Command
         return [];
     }
 
+    private function calculateRedrawFrequency($totalRows)
+    {
+        $percentage = 10;
+
+        if ($totalRows < 100) {
+            $percentage = 10;
+        } elseif ($totalRows < 1000) {
+            $percentage = 1;
+        } elseif ($totalRows < 10000) {
+            $percentage = 0.1;
+        } elseif ($totalRows < 100000) {
+            $percentage = 0.01;
+        } elseif ($totalRows < 1000000) {
+            $percentage = 0.001;
+        }
+
+        return ceil($totalRows * $percentage);
+    }
 }
