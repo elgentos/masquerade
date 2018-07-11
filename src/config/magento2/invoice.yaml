@@ -4,22 +4,22 @@ invoice:
       customer_note:
         formatter:
           name: sentence
-          optional: true
+        optional: true
 
   sales_invoice_comment:
     columns:
       comment:
         formatter:
           name: sentence
-          optional: true
+        optional: true
 
   sales_invoice_grid:
     columns:
       customer_email:
         formatter:
           name: email
-          unique: true
-          nullColumnBeforeRun: true
+        unique: true
+        nullColumnBeforeRun: true
       customer_name:
         formatter:
           name: name

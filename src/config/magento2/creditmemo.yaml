@@ -16,8 +16,8 @@ creditmemo:
       customer_email:
         formatter:
           name: email
-          unique: true
-          nullColumnBeforeRun: true
+        unique: true
+        nullColumnBeforeRun: true
       customer_name:
         formatter:
           name: name

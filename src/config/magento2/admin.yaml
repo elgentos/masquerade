@@ -11,13 +11,13 @@ admin:
       email:
         formatter:
           name: email
-          nullColumnBeforeRun: true
-          unique: true
+        nullColumnBeforeRun: true
+        unique: true
       username:
         formatter:
           name: firstName
-          nullColumnBeforeRun: true
-          unique: true
+        nullColumnBeforeRun: true
+        unique: true
       password:
         formatter:
           name: password

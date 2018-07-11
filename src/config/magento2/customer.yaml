@@ -4,8 +4,8 @@ customer:
       email:
         formatter:
           name: email
-          unique: true
-          nullColumnBeforeRun: true
+        unique: true
+        nullColumnBeforeRun: true
       firstname:
         formatter:
         name: firstName
@@ -24,7 +24,7 @@ customer:
       company:
         formatter:
           name: company
-          optional: true
+        optional: true
       street:
         formatter:
           name: streetAddress
@@ -40,7 +40,7 @@ customer:
       fax:
         formatter:
           name: phoneNumber
-          optional: true
+        optional: true
 
   customer_grid_flat:
     columns:
@@ -53,12 +53,12 @@ customer:
       email:
         formatter:
           name: email
-          unique: true
-          nullColumnBeforeRun: true
+        unique: true
+        nullColumnBeforeRun: true
       dob:
         formatter:
           name: dateTimeThisCentury
-          optional: true
+        optional: true
       billing_full:
         formatter:
           name: address
@@ -86,12 +86,12 @@ customer:
       billing_fax:
         formatter:
           name: phoneNumber
-          optional: true
+        optional: true
       billing_vat_id:
         formatter:
           name: vat
-          optional: true
+        optional: true
       billing_company:
         formatter:
           name: company
-          optional: true
+        optional: true

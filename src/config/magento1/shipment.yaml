@@ -4,7 +4,7 @@ shipment:
       comment:
         formatter:
           name: sentence
-          optional: true
+        optional: true
 
   sales_flat_shipment_grid:
     columns:

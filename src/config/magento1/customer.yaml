@@ -4,8 +4,8 @@ customer:
       email:
         formatter:
           name: email
-          unique: true
-          nullColumnBeforeRun: true
+        unique: true
+        nullColumnBeforeRun: true
 
   customer_address_entity:
     columns:

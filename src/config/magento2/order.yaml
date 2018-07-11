@@ -4,8 +4,8 @@ order:
       customer_email:
         formatter:
           name: email
-          unique: true
-          nullColumnBeforeRun: true
+        unique: true
+        nullColumnBeforeRun: true
       customer_firstname:
         formatter:
           name: firstName
@@ -15,26 +15,26 @@ order:
       customer_dob:
         formatter:
           name: dateTimeThisCentury
-          optional: true
+        optional: true
       customer_taxvat:
         formatter:
           name: vat
-          optional: true
+        optional: true
       remote_ip:
         formatter:
           name: ipv4
       customer_note:
         formatter:
           name: sentence
-          optional: true
+        optional: true
 
   sales_order_grid:
     columns:
       customer_email:
         formatter:
           name: email
-          unique: true
-          nullColumnBeforeRun: true
+        unique: true
+        nullColumnBeforeRun: true
       customer_name:
         formatter:
           name: name
@@ -56,8 +56,8 @@ order:
       email:
         formatter:
           name: email
-          unique: true
-          nullColumnBeforeRun: true
+        unique: true
+        nullColumnBeforeRun: true
       firstname:
         formatter:
           name: firstName
@@ -67,7 +67,7 @@ order:
       company:
         formatter:
           name: company
-          optional: true
+        optional: true
       street:
         formatter:
           name: streetAddress
@@ -83,8 +83,8 @@ order:
       fax:
         formatter:
           name: phoneNumber
-          optional: true
+        optional: true
       vat_id:
         formatter:
           name: vat
-          optional: true
+        optional: true

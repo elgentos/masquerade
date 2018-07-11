@@ -4,7 +4,7 @@ invoice:
       comment:
         formatter:
           name: sentence
-          optional: true
+        optional: true
 
   sales_flat_invoice_grid:
     columns:
