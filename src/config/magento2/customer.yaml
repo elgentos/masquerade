@@ -5,11 +5,22 @@ customer:
         formatter: email
         unique: true
         nullColumnBeforeRun: true
-      firstname:
+      prefix:
         formatter:
-        name: firstName
+          name: fixed
+          value:
+      firstname:
+        formatter: firstName
+      middlename:
+        formatter:
+          name: fixed
+          value:
       lastname:
         formatter: lastName
+      suffix:
+        formatter:
+          name: fixed
+          value:
 
   customer_address_entity:
     columns:

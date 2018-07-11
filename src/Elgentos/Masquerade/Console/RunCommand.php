@@ -145,6 +145,11 @@ class RunCommand extends Command
 
                     if (!$formatter) continue;
 
+                    if ($formatter == 'fixed') {
+                        $updates[$columnName] = array_first($options);
+                        continue;
+                    }
+
                     try {
                         $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$formatter}(...$options);
                     } catch (\InvalidArgumentException $e) {
