@@ -2,8 +2,7 @@ quote:
   sales_flat_quote:
     columns:
       customer_email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       customer_firstname:
@@ -13,26 +12,22 @@ quote:
         formatter:
         name: lastName
       customer_dob:
-        formatter:
-          name: dateTimeThisCentury
+        formatter: dateTimeThisCentury
         optional: true
       customer_taxvat:
-        formatter:
-          name: vat
+        formatter: vat
         optional: true
       remote_ip:
         formatter:
         name: ipv4
       customer_note:
-        formatter:
-          name: sentence
+        formatter: sentence
         optional: true
 
   sales_flat_quote_address:
     columns:
       email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       firstname:
@@ -42,8 +37,7 @@ quote:
         formatter:
         name: lastName
       company:
-        formatter:
-          name: company
+        formatter: company
         optional: true
       street:
         formatter:
@@ -58,14 +52,11 @@ quote:
         formatter:
         name: phoneNumber
       fax:
-        formatter:
-          name: phoneNumber
+        formatter: phoneNumber
         optional: true
       vat_id:
-        formatter:
-          name: vat
+        formatter: vat
         optional: true
       customer_notes:
-        formatter:
-          name: sentence
+        formatter: sentence
         optional: true

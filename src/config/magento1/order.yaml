@@ -2,8 +2,7 @@ order:
   sales_flat_order:
     columns:
       customer_email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       customer_firstname:
@@ -13,19 +12,16 @@ order:
         formatter:
         name: lastName
       customer_dob:
-        formatter:
-          name: dateTimeThisCentury
+        formatter: dateTimeThisCentury
         optional: true
       customer_taxvat:
-        formatter:
-          name: vat
+        formatter: vat
         optional: true
       remote_ip:
         formatter:
         name: ipv4
       customer_note:
-        formatter:
-          name: sentence
+        formatter: sentence
         optional: true
 
   sales_flat_order_grid:
@@ -34,14 +30,12 @@ order:
         formatter:
         name: name
       billing_name:
-        formatter:
-          name: name
+        formatter: name
 
   sales_flat_order_address:
     columns:
       email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
       firstname:
@@ -51,8 +45,7 @@ order:
         formatter:
         name: lastName
       company:
-        formatter:
-          name: company
+        formatter: company
         optional: true
       street:
         formatter:
@@ -67,10 +60,8 @@ order:
         formatter:
         name: phoneNumber
       fax:
-        formatter:
-          name: phoneNumber
+        formatter: phoneNumber
         optional: true
       vat_id:
-        formatter:
-          name: vat
+        formatter: vat
         optional: true

@@ -2,8 +2,6 @@ rating:
   rating_option_vote:
     columns:
       remote_ip:
-        formatter:
-          name: ipv4
+        formatter: ipv4
       remote_ip_long:
-        formatter:
-          name: ipv6
+        formatter: ipv6

@@ -5,17 +5,14 @@ creditmemo:
         formatter:
         name: word
       transaction_id:
-        formatter:
-          name: randomNumber
+        formatter: randomNumber
 
   sales_flat_creditmemo_comment:
     columns:
       comment:
-        formatter:
-          name: sentence
+        formatter: sentence
 
   sales_flat_creditmemo_grid:
     columns:
       billing_name:
-        formatter:
-          name: name
+        formatter: name

@@ -2,12 +2,10 @@ invoice:
   sales_flat_invoice_comment:
     columns:
       comment:
-        formatter:
-          name: sentence
+        formatter: sentence
         optional: true
 
   sales_flat_invoice_grid:
     columns:
       billing_name:
-        formatter:
-          name: name
+        formatter: name

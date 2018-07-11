@@ -2,8 +2,7 @@ customer:
   customer_entity:
     columns:
       email:
-        formatter:
-          name: email
+        formatter: email
         unique: true
         nullColumnBeforeRun: true
 
