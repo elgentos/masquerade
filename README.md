@@ -5,7 +5,7 @@
 Point Masquerade to a database, give it a rule-set defined in YAML and Masquerade will anonymize the data for you 
  automatically!
  
-<img src="https://user-images.githubusercontent.com/431360/42535187-004838f4-848f-11e8-8ca0-71913743d5b0.png" width="500" />
+<img src="https://user-images.githubusercontent.com/431360/42574650-30e8d186-851f-11e8-9693-c23b426c43f2.png" width="600" />
  
 ### Out-of-the-box supported frameworks
 
