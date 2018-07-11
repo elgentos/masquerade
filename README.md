@@ -21,7 +21,7 @@ For formatters, you can use all default [Faker formatters](https://github.com/fz
  
 ### Installation
 
-Download the phar file;
+Download the phar file:
 
 ```
 wget https://github.com/elgentos/masquerade/raw/master/dist/masquerade.phar 
@@ -50,7 +50,7 @@ Options:
       --group[=GROUP]        Which groups to run masquerade on [all]
 ```
 
-You can also set these variables in a `config.yaml` file in the same locartion as where you run masquerade from, for example:
+You can also set these variables in a `config.yaml` file in the same location as where you run masquerade from, for example:
 
 ```yaml
 platform: magento2
@@ -169,6 +169,21 @@ $ php masquerade.phar list --platform=magento2
 | magento2 | shipment   | sales_shipment_grid      | billing_address    | address             |
 +----------+------------+--------------------------+--------------------+---------------------+
 
+```
+
+### Building from source
+
+To build the phar from source you can use the `build.sh` script. Note that it depends on [phar-composer](https://github.com/clue/phar-composer) so you need to make sure that is available in the masquerade directory first.
+
+```
+cd masquerade
+# Find the latest version here: https://github.com/clue/phar-composer/releases
+wget https://github.com/clue/phar-composer/releases/download/v1.0.0/phar-composer.phar
+composer update
+chmod u+x build.sh
+./build.sh
+chmod u+x bin/masquerade
+./bin/masquerade --help
 ```
 
 #### Built by elgentos
