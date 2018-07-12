@@ -25,7 +25,7 @@ You can also create your own custom providers with formatters. They need to exte
 
 An example file `.masquerade/Custom/WoopFormatter.php`;
 
-```
+```php
 <?php
 
 namespace Custom;
@@ -38,7 +38,7 @@ class WoopFormatter extends Base {
         $woops = ['woop', 'wop', 'wopwop', 'woopwoop'];
         return $woops[array_rand($woops)];
     }
-}%
+}
 ```
 
 And then use it in your YAML file. A provider needs to be set on the column name level, not on the formatter level.
