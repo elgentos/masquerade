@@ -3,7 +3,6 @@ review:
     pk: detail_id
     columns:
       nickname:
-        provider: \Test\WoopFormatter
         formatter: firstName
       title:
         formatter: sentence

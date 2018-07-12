@@ -2,8 +2,6 @@
 
 namespace Elgentos\Masquerade\Console;
 
-require __DIR__ . '/../../../Test/WoopFormatter.php';
-
 use Phar;
 use Symfony\Component\Console\Command\Command;
 use Noodlehaus\Config;
@@ -166,7 +164,7 @@ class RunCommand extends Command
                     }
 
                     try {
-                        $updates[$columnName] = $this->getFakerInstance($columnName, $columnData, $providerClassName)->{$formatter}(...$options);
+                        $updates[$columnName] = $this->getFakerInstance($columnData, $providerClassName)->{$formatter}(...$options);
                     } catch (\InvalidArgumentException $e) {
                         // If InvalidArgumentException is thrown, formatter is not found, use null instead
                         $updates[$columnName] = null;
@@ -251,24 +249,13 @@ class RunCommand extends Command
     /**
      * @param $columnName
      * @param $columnData
-     * @param bool $provider
+     * @param bool $providerClassName
      * @return mixed
+     * @throws \Exception
+     * @internal param bool $provider
      */
-    private function getFakerInstance($columnName, $columnData, $providerClassName = false)
+    private function getFakerInstance($columnData, $providerClassName = false)
     {
-        if (isset($this->fakerInstances[$columnName])) {
-            if (array_get($columnData, 'unique', false)) {
-                return $this->fakerInstances[$columnName]->unique();
-            }
-            if (array_get($columnData, 'optional', false)) {
-                return $this->fakerInstances[$columnName]->optional();
-            }
-            if (array_get($columnData, 'valid', false)) {
-                return $this->fakerInstances[$columnName]->valid();
-            }
-            return $this->fakerInstances[$columnName];
-        }
-
         $fakerInstance = FakerFactory::create($this->locale);
 
         $provider = false;
@@ -283,9 +270,17 @@ class RunCommand extends Command
             $fakerInstance->addProvider($provider);
         }
 
-        $this->fakerInstances[$columnName] = $fakerInstance;
+        if (array_get($columnData, 'unique', false)) {
+            $fakerInstance->unique();
+        }
+        if (array_get($columnData, 'optional', false)) {
+            $fakerInstance->optional();
+        }
+        if (array_get($columnData, 'valid', false)) {
+            $fakerInstance->valid();
+        }
 
-        return $this->fakerInstances[$columnName];
+        return $fakerInstance;
     }
 
     /**
