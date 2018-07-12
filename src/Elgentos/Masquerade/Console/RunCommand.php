@@ -282,44 +282,22 @@ class RunCommand extends Command
     }
 
     /**
-     * @return bool
-     */
-    private function isPhar() {
-        return strlen(Phar::running()) > 0 ? true : false;
-    }
-
-    /**
      * @param $platformName
      * @return array
      */
     private function getConfigFiles($platformName)
     {
-        if (!$this->isPhar()) {
-            return glob(__DIR__ . '/../../../config/' . $platformName . '/*.*');
-        }
-
         // Unfortunately, glob() does not work when using a phar and hassankhan/config relies on glob.
-        // Therefore, we have to explicitly pass all config files back when using the phar
-        if ($platformName == 'magento2') {
-            $files = [
-                'config/magento2/invoice.yaml',
-                'config/magento2/creditmemo.yaml',
-                'config/magento2/review.yaml',
-                'config/magento2/newsletter.yaml',
-                'config/magento2/order.yaml',
-                'config/magento2/quote.yaml',
-                'config/magento2/admin.yaml',
-                'config/magento2/email.yaml',
-                'config/magento2/customer.yaml',
-                'config/magento2/shipment.yaml'
-            ];
+        // Therefore, we have to scan the dir ourselves when using the phar
+        $configDir = 'config/' . $platformName;
+        if (file_exists($configDir) && is_dir($configDir)) {
+            $files = array_slice(scandir('config/magento2'), 2);
 
             return array_map(function ($file) {
                 return 'phar://masquerade.phar/src/' . $file;
             }, $files);
         }
 
-        // No other platforms supported by default right now
         return [];
     }
 
