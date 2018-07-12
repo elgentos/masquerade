@@ -273,6 +273,13 @@ class RunCommand extends Command
     }
 
     /**
+     * @return bool
+     */
+    private function isPhar() {
+        return strlen(Phar::running()) > 0 ? true : false;
+    }
+
+    /**
      * @param $platformName
      * @return array
      */
@@ -280,16 +287,17 @@ class RunCommand extends Command
     {
         // Unfortunately, glob() does not work when using a phar and hassankhan/config relies on glob.
         // Therefore, we have to scan the dir ourselves when using the phar
-        $configDir = 'config/' . $platformName;
-        if (file_exists($configDir) && is_dir($configDir)) {
-            $files = array_slice(scandir('config/magento2'), 2);
-
-            return array_map(function ($file) {
-                return 'phar://masquerade.phar/src/' . $file;
-            }, $files);
+        if ($this->isPhar()) {
+            $configDir = 'phar://masquerade.phar/src/config/' . $platformName;
+        } else {
+            $configDir = __DIR__ . '/../../../config/' . $platformName;
         }
 
-        return [];
+        $files = array_slice(scandir($configDir), 2);
+
+        return array_map(function ($file) use ($configDir) {
+            return $configDir . '/' . $file;
+        }, $files);
     }
 
     private function calculateRedrawFrequency($totalRows)
