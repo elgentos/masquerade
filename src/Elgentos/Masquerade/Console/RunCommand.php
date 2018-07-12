@@ -2,6 +2,8 @@
 
 namespace Elgentos\Masquerade\Console;
 
+require __DIR__ . '/../../../Test/WoopFormatter.php';
+
 use Phar;
 use Symfony\Component\Console\Command\Command;
 use Noodlehaus\Config;
@@ -147,16 +149,12 @@ class RunCommand extends Command
                 foreach ($table['columns'] as $columnName => $columnData) {
                     $formatter = array_get($columnData, 'formatter.name');
                     $formatterData = array_get($columnData, 'formatter');
-                    $provider = false;
+                    $providerClassName = array_get($columnData, 'provider', false);
 
                     if (!$formatter) {
                         $formatter = $formatterData;
                         $options = [];
                     } else {
-                        if (isset($formatterData['provider'])) {
-                            $provider = array_get($formatterData, 'provider');
-                            unset($formatterData['provider']);
-                        }
                         $options = array_values(array_slice($formatterData, 1));
                     }
 
@@ -168,7 +166,7 @@ class RunCommand extends Command
                     }
 
                     try {
-                        $updates[$columnName] = $this->getFakerInstance($columnName, $columnData, $provider)->{$formatter}(...$options);
+                        $updates[$columnName] = $this->getFakerInstance($columnName, $columnData, $providerClassName)->{$formatter}(...$options);
                     } catch (\InvalidArgumentException $e) {
                         // If InvalidArgumentException is thrown, formatter is not found, use null instead
                         $updates[$columnName] = null;
@@ -253,9 +251,10 @@ class RunCommand extends Command
     /**
      * @param $columnName
      * @param $columnData
+     * @param bool $provider
      * @return mixed
      */
-    private function getFakerInstance($columnName, $columnData, $provider = false)
+    private function getFakerInstance($columnName, $columnData, $providerClassName = false)
     {
         if (isset($this->fakerInstances[$columnName])) {
             if (array_get($columnData, 'unique', false)) {
@@ -272,13 +271,28 @@ class RunCommand extends Command
 
         $fakerInstance = FakerFactory::create($this->locale);
 
-        if ($provider && $provider instanceof \Faker\Provider\Base) {
-            $fakerInstance->addProvider(new $provider($fakerInstance));
+        $provider = false;
+        if ($providerClassName) {
+            $provider = new $providerClassName($fakerInstance);
+        }
+
+        if (is_object($provider)) {
+            if (!$provider instanceof \Faker\Provider\Base) {
+                throw new \Exception('Class ' . get_class($provider) . ' is not an instance of \Faker\Provider\Base');
+            }
+            $fakerInstance->addProvider($provider);
         }
 
         $this->fakerInstances[$columnName] = $fakerInstance;
 
         return $this->fakerInstances[$columnName];
+    }
+
+    /**
+     * @return bool
+     */
+    private function isPhar() {
+        return strlen(Phar::running()) > 0 ? true : false;
     }
 
     /**
@@ -289,16 +303,17 @@ class RunCommand extends Command
     {
         // Unfortunately, glob() does not work when using a phar and hassankhan/config relies on glob.
         // Therefore, we have to scan the dir ourselves when using the phar
-        $configDir = 'config/' . $platformName;
-        if (file_exists($configDir) && is_dir($configDir)) {
-            $files = array_slice(scandir('config/magento2'), 2);
-
-            return array_map(function ($file) {
-                return 'phar://masquerade.phar/src/' . $file;
-            }, $files);
+        if ($this->isPhar()) {
+            $configDir = 'phar://masquerade.phar/src/config/' . $platformName;
+        } else {
+            $configDir = __DIR__ . '/../../../config/' . $platformName;
         }
 
-        return [];
+        $files = array_slice(scandir($configDir), 2);
+
+        return array_map(function ($file) use ($configDir) {
+            return $configDir . '/' . $file;
+        }, $files);
     }
 
     private function calculateRedrawFrequency($totalRows)
