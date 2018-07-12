@@ -147,6 +147,7 @@ class RunCommand extends Command
                 foreach ($table['columns'] as $columnName => $columnData) {
                     $formatter = array_get($columnData, 'formatter.name');
                     $formatterData = array_get($columnData, 'formatter');
+                    $providerClassName = array_get($columnData, 'provider', false);
 
                     if (!$formatter) {
                         $formatter = $formatterData;
@@ -163,7 +164,7 @@ class RunCommand extends Command
                     }
 
                     try {
-                        $updates[$columnName] = $this->getFakerInstance($columnName, $columnData)->{$formatter}(...$options);
+                        $updates[$columnName] = $this->getFakerInstance($columnData, $providerClassName)->{$formatter}(...$options);
                     } catch (\InvalidArgumentException $e) {
                         // If InvalidArgumentException is thrown, formatter is not found, use null instead
                         $updates[$columnName] = null;
@@ -248,28 +249,45 @@ class RunCommand extends Command
     /**
      * @param $columnName
      * @param $columnData
+     * @param bool $providerClassName
      * @return mixed
+     * @throws \Exception
+     * @internal param bool $provider
      */
-    private function getFakerInstance($columnName, $columnData)
+    private function getFakerInstance($columnData, $providerClassName = false)
     {
-        if (isset($this->fakerInstances[$columnName])) {
-            if (array_get($columnData, 'unique', false)) {
-                return $this->fakerInstances[$columnName]->unique();
-            }
-            if (array_get($columnData, 'optional', false)) {
-                return $this->fakerInstances[$columnName]->optional();
-            }
-            if (array_get($columnData, 'valid', false)) {
-                return $this->fakerInstances[$columnName]->valid();
-            }
-            return $this->fakerInstances[$columnName];
-        }
-
         $fakerInstance = FakerFactory::create($this->locale);
 
-        $this->fakerInstances[$columnName] = $fakerInstance;
+        $provider = false;
+        if ($providerClassName) {
+            $provider = new $providerClassName($fakerInstance);
+        }
 
-        return $this->fakerInstances[$columnName];
+        if (is_object($provider)) {
+            if (!$provider instanceof \Faker\Provider\Base) {
+                throw new \Exception('Class ' . get_class($provider) . ' is not an instance of \Faker\Provider\Base');
+            }
+            $fakerInstance->addProvider($provider);
+        }
+
+        if (array_get($columnData, 'unique', false)) {
+            $fakerInstance->unique();
+        }
+        if (array_get($columnData, 'optional', false)) {
+            $fakerInstance->optional();
+        }
+        if (array_get($columnData, 'valid', false)) {
+            $fakerInstance->valid();
+        }
+
+        return $fakerInstance;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isPhar() {
+        return strlen(Phar::running()) > 0 ? true : false;
     }
 
     /**

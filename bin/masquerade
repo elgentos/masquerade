@@ -3,6 +3,24 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+spl_autoload_register(function ($class) {
+    $class = str_replace('\\','/', $class);
+    $file = $class . '.php';
+
+    $pathPrefixToLookForCustomFormatters = [
+        $_SERVER['HOME'] . '/',
+        __DIR__. '/',
+        ''
+    ];
+
+    foreach ($pathPrefixToLookForCustomFormatters as $path) {
+        $file = $path . '.masquerade/' . $class . '.php';
+        if (file_exists($file)) {
+            require $file;
+        }
+    }
+});
+
 use Elgentos\Masquerade\Console\ListCommand;
 use Elgentos\Masquerade\Console\RunCommand;
 use Symfony\Component\Console\Application;

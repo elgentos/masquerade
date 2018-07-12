@@ -10,7 +10,8 @@ customer:
           name: fixed
           value:
       firstname:
-        formatter: firstName
+        formatter:
+          name: firstName
       middlename:
         formatter:
           name: fixed

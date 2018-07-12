@@ -17,7 +17,41 @@ You can add your own configuration files in a directory named `config` in the sa
 
 See the [Magento 2 YAML files](https://github.com/elgentos/masquerade/tree/master/src/config/magento2) as examples for notation. 
 
-For formatters, you can use all default [Faker formatters](https://github.com/fzaninotto/Faker#formatters). 
+For formatters, you can use all default [Faker formatters](https://github.com/fzaninotto/Faker#formatters).
+
+#### Custom Providers / Formatters
+
+You can also create your own custom providers with formatters. They need to extend `Faker\Provider\Base` and they need to live in either `~/.masquerade` or `.masquerade` relative from where you run masquerade.
+
+An example file `.masquerade/Custom/WoopFormatter.php`;
+
+```php
+<?php
+
+namespace Custom;
+
+use Faker\Provider\Base;
+
+class WoopFormatter extends Base {
+
+    public function woopwoop() {
+        $woops = ['woop', 'wop', 'wopwop', 'woopwoop'];
+        return $woops[array_rand($woops)];
+    }
+}
+```
+
+And then use it in your YAML file. A provider needs to be set on the column name level, not on the formatter level.
+
+```
+customer:
+  customer_entity:
+    columns:
+      firstname:
+        provider: \Custom\WoopFormatter
+        formatter: 
+          name: woopwoop
+```  
  
 ### Installation
 
