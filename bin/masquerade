@@ -5,7 +5,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Elgentos\Masquerade\Console\ListCommand;
 use Elgentos\Masquerade\Console\RunCommand;
-use Symfony\Component\Console\Application;
+use Elgentos\Masquerade\Application;
 
 $application = new Application();
 
