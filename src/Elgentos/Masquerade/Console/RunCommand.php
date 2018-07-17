@@ -291,13 +291,6 @@ class RunCommand extends Command
     }
 
     /**
-     * @return bool
-     */
-    private function isPhar() {
-        return strlen(Phar::running()) > 0 ? true : false;
-    }
-
-    /**
      * @param $platformName
      * @return array
      */
