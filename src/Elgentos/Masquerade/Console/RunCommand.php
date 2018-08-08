@@ -29,13 +29,13 @@ class RunCommand extends Command
     protected $platformName;
     protected $locale;
 
-    protected $logo = '                              
+    const LOGO = '                              
 ._ _  _. _ _.    _ .__. _| _  
 | | |(_|_>(_||_|(/_|(_|(_|(/_ 
             |
                    by elgentos';
 
-    protected $version = '0.1.0';
+    const VERSION = '0.1.0';
 
     /**
      * @var \Illuminate\Database\Connection
@@ -56,7 +56,7 @@ class RunCommand extends Command
      *
      * @var string
      */
-    protected $description = 'List of tables (and columns) to be faked';
+    protected $description = 'Run masquerade for a specific platform and group(s)';
 
     /**
      *
@@ -91,8 +91,8 @@ class RunCommand extends Command
 
         $this->setup();
 
-        $this->output->writeln($this->logo);
-        $this->output->writeln('                        v' . $this->version);
+        $this->output->writeln(self::LOGO);
+        $this->output->writeln('                        v' . self::VERSION);
 
         foreach ($this->config as $groupName => $tables) {
             if (!empty($this->group) && !in_array($groupName, $this->group)) {

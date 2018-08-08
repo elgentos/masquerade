@@ -3,13 +3,13 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Elgentos\Masquerade\Console\ListCommand;
+use Elgentos\Masquerade\Console\GroupsCommand;
 use Elgentos\Masquerade\Console\RunCommand;
 use Elgentos\Masquerade\Application;
 
-$application = new Application();
+$application = new Application(RunCommand::LOGO, RunCommand::VERSION);
 
-$application->add(new ListCommand);
+$application->add(new GroupsCommand);
 $application->add(new RunCommand);
 
 $application->run();

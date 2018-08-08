@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ListCommand extends Command
+class GroupsCommand extends Command
 {
     protected $config;
     protected $input;
@@ -22,14 +22,14 @@ class ListCommand extends Command
      *
      * @var string
      */
-    protected $name = 'list';
+    protected $name = 'groups';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'List of tables (and columns) to be faked';
+    protected $description = 'List of groups (tables and columns) to be faked';
 
     protected function configure()
     {
