@@ -11,6 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Faker\Factory as FakerFactory;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Symfony\Component\Process\Process;
+use Jack\Symfony\ProcessManager;
 
 class RunCommand extends Command
 {
@@ -94,13 +96,30 @@ class RunCommand extends Command
         $this->output->writeln(self::LOGO);
         $this->output->writeln('                        v' . self::VERSION);
 
-        foreach ($this->config as $groupName => $tables) {
-            if (!empty($this->group) && !in_array($groupName, $this->group)) {
-                continue;
+        if (count($this->group) !== 1) {
+            // Spawn subprocesses
+            $processes = [];
+
+            foreach ($this->config as $groupName => $tables) {
+                if (!empty($this->group) && !in_array($groupName, $this->group)) {
+                    continue;
+                }
+                $processes[] = new Process('bin/masquerade run --group=' . $groupName);
             }
-            foreach ($tables as $tableName => $table) {
-                $table['name'] = $tableName;
-                $this->fakeData($table);
+
+            $processManager = new ProcessManager();
+            $output->writeln('Starting max ' . count($this->config) . ' processes..');
+            $processManager->runParallel($processes, count($this->config), 1000, function ($type, $output, $process) { echo $output; });
+        } else {
+            // Fake data
+            foreach ($this->config as $groupName => $tables) {
+                if (!empty($this->group) && !in_array($groupName, $this->group)) {
+                    continue;
+                }
+                foreach ($tables as $tableName => $table) {
+                    $table['name'] = $tableName;
+                    $this->fakeData($table);
+                }
             }
         }
 
