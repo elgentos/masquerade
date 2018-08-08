@@ -35,7 +35,7 @@ class RunCommand extends Command
             |
                    by elgentos';
 
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
 
     /**
      * @var \Illuminate\Database\Connection
