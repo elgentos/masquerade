@@ -21,7 +21,6 @@
                 "doctrine/annotations",
                 "symfony/translation",
                 "illuminate/contracts",
-                "illuminate/support",
                 "nesbot"
             ],
             "in": "vendor"
