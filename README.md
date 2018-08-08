@@ -207,12 +207,12 @@ $ php masquerade.phar list --platform=magento2
 
 ### Building from source
 
-To build the phar from source you can use the `build.sh` script. Note that it depends on [phar-composer](https://github.com/clue/phar-composer) so you need to make sure that is available in the masquerade directory first.
+To build the phar from source you can use the `build.sh` script. Note that it depends on [Box](https://github.com/box-project/box2) so you need to make sure that it is available first.
 
 ```
 cd masquerade
-# Find the latest version here: https://github.com/clue/phar-composer/releases
-wget https://github.com/clue/phar-composer/releases/download/v1.0.0/phar-composer.phar
+# Find the latest version here: https://github.com/box-project/box2#as-a-phar-recommended
+curl -LSs https://box-project.github.io/box2/installer.php | php
 composer update
 chmod u+x build.sh
 ./build.sh
