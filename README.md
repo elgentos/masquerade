@@ -216,8 +216,7 @@ curl -LSs https://box-project.github.io/box2/installer.php | php
 composer update
 chmod u+x build.sh
 ./build.sh
-chmod u+x bin/masquerade
-./bin/masquerade --help
+bin/masquerade
 ```
 
 ## Generating a new release changelog
