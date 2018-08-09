@@ -2,9 +2,8 @@
 
 namespace Elgentos\Masquerade\Console;
 
-use Phar;
+use Elgentos\Masquerade\Helper\Config;
 use Symfony\Component\Console\Command\Command;
-use Noodlehaus\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,6 +13,14 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 class RunCommand extends Command
 {
+    const LOGO = '                              
+._ _  _. _ _.    _ .__. _| _  
+| | |(_|_>(_||_|(/_|(_|(_|(/_ 
+            |
+                   by elgentos';
+
+    const VERSION = '0.1.2';
+
     protected $config;
 
     /**
@@ -28,14 +35,6 @@ class RunCommand extends Command
 
     protected $platformName;
     protected $locale;
-
-    const LOGO = '                              
-._ _  _. _ _.    _ .__. _| _  
-| | |(_|_>(_||_|(/_|(_|(_|(/_ 
-            |
-                   by elgentos';
-
-    const VERSION = '0.1.1';
 
     /**
      * @var \Illuminate\Database\Connection
@@ -57,6 +56,11 @@ class RunCommand extends Command
      * @var string
      */
     protected $description = 'Run masquerade for a specific platform and group(s)';
+
+    /**
+     * @var Config
+     */
+    protected $configHelper;
 
     /**
      *
@@ -185,8 +189,9 @@ class RunCommand extends Command
      */
     private function setup()
     {
+        $this->configHelper = new Config();
         if (file_exists('config.yaml')) {
-            $databaseConfig = new Config('config.yaml');
+            $databaseConfig = $this->configHelper->readYamlFile('.', 'config.yaml');
         }
 
         $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
@@ -195,15 +200,7 @@ class RunCommand extends Command
             throw new \Exception('No platformName set, use option --platform or set it in config.yaml');
         }
 
-        // Get default config
-        $config = new Config($this->getConfigFiles($this->platformName));
-        $this->config = $config->all();
-
-        // Get custom config
-        if (file_exists('config') && is_dir('config')) {
-            $customConfig = new Config(sprintf('config/%s', $this->platformName));
-            $this->config = array_merge($config->all(), $customConfig->all());
-        }
+        $this->config = $this->configHelper->getConfig($this->platformName);
 
         $host = $databaseConfig['host'] ?? $this->input->getOption('host') ?? 'localhost';
         $driver = $databaseConfig['driver'] ?? $this->input->getOption('driver') ?? 'mysql';
@@ -284,33 +281,9 @@ class RunCommand extends Command
     }
 
     /**
-     * @return bool
+     * @param $totalRows
+     * @return float
      */
-    private function isPhar() {
-        return strlen(Phar::running()) > 0 ? true : false;
-    }
-
-    /**
-     * @param $platformName
-     * @return array
-     */
-    private function getConfigFiles($platformName)
-    {
-        // Unfortunately, glob() does not work when using a phar and hassankhan/config relies on glob.
-        // Therefore, we have to scan the dir ourselves when using the phar
-        if ($this->isPhar()) {
-            $configDir = 'phar://masquerade.phar/src/config/' . $platformName;
-        } else {
-            $configDir = __DIR__ . '/../../../config/' . $platformName;
-        }
-
-        $files = array_slice(scandir($configDir), 2);
-
-        return array_map(function ($file) use ($configDir) {
-            return $configDir . '/' . $file;
-        }, $files);
-    }
-
     private function calculateRedrawFrequency($totalRows)
     {
         $percentage = 10;
@@ -329,4 +302,5 @@ class RunCommand extends Command
 
         return ceil($totalRows * $percentage);
     }
+
 }
