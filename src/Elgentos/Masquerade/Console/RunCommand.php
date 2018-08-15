@@ -138,14 +138,14 @@ class RunCommand extends Command
 
         $primaryKey = array_get($table, 'pk', 'entity_id');
 
-        $this->db->table($table['name'])->orderBy($primaryKey)->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey) {
-            // Null columns before run to avoid integrity constrains errors
-            foreach ($table['columns'] as $columnName => $columnData) {
-                if (array_get($columnData, 'nullColumnBeforeRun', false)) {
-                    $this->db->table($table['name'])->update([$columnName => null]);
-                }
+        // Null columns before run to avoid integrity constrains errors
+        foreach ($table['columns'] as $columnName => $columnData) {
+            if (array_get($columnData, 'nullColumnBeforeRun', false)) {
+                $this->db->table($table['name'])->update([$columnName => null]);
             }
+        }
 
+        $this->db->table($table['name'])->orderBy($primaryKey)->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey) {
             foreach ($rows as $row) {
                 $updates = [];
                 foreach ($table['columns'] as $columnName => $columnData) {
