@@ -3,6 +3,7 @@
 namespace Elgentos\Masquerade\Console;
 
 use Elgentos\Masquerade\Helper\Config;
+use Faker\Generator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -112,9 +113,9 @@ class RunCommand extends Command
     }
 
     /**
-     * @param $table
+     * @param array $table
      */
-    private function fakeData($table)
+    private function fakeData(array $table) : void
     {
         if (!$this->db->getSchemaBuilder()->hasTable($table['name'])) {
             $this->output->writeln('Table ' . $table['name'] . ' does not exist.');
@@ -244,14 +245,13 @@ class RunCommand extends Command
     }
 
     /**
-     * @param $columnName
-     * @param $columnData
+     * @param array $columnData
      * @param bool $providerClassName
-     * @return mixed
+     * @return Generator
      * @throws \Exception
      * @internal param bool $provider
      */
-    private function getFakerInstance($columnData, $providerClassName = false)
+    private function getFakerInstance(array $columnData, $providerClassName = false) : Generator
     {
         $fakerInstance = FakerFactory::create($this->locale);
 
@@ -281,10 +281,10 @@ class RunCommand extends Command
     }
 
     /**
-     * @param $totalRows
-     * @return float
+     * @param int $totalRows
+     * @return int
      */
-    private function calculateRedrawFrequency($totalRows)
+    private function calculateRedrawFrequency(int $totalRows) : int
     {
         $percentage = 10;
 
@@ -300,7 +300,7 @@ class RunCommand extends Command
             $percentage = 0.001;
         }
 
-        return ceil($totalRows * $percentage);
+        return (int) ceil($totalRows * $percentage);
     }
 
 }

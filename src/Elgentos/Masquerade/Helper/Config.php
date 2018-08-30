@@ -24,10 +24,11 @@ class Config {
     ];
 
     /**
-     * @param $file
+     * @param string $rootDir
+     * @param string $file
      * @return array
      */
-    public function readYamlFile($rootDir, $file)
+    public function readYamlFile(string $rootDir, string $file) : array
     {
         $data = [
             '@glob' => $file
@@ -48,11 +49,11 @@ class Config {
     }
 
     /**
-     * @param $rootDir
-     * @param $dir
+     * @param string $rootDir
+     * @param string $dir
      * @return array
      */
-    public function readYamlDir($rootDir, $dir)
+    public function readYamlDir(string $rootDir, string $dir) : array
     {
         $data = [
             '@glob' => $dir
