@@ -76,8 +76,8 @@ class IdentifyCommand extends Command
         $this->setup();
 
         $this->identifiers = [
-            'firstname',
-            'lastname',
+            'firstName',
+            'lastName',
             'address',
             'suffix',
             'city',
@@ -94,7 +94,7 @@ class IdentifyCommand extends Command
             'company',
             'remote_ip',
             'ip_address',
-            'creditcard',
+            'creditCard',
             'transaction'
         ];
 
@@ -106,7 +106,11 @@ class IdentifyCommand extends Command
             foreach ($columns as $columnName) {
                 if ($formatter = $this->strposa($columnName, $this->identifiers)) {
                     $exampleValues = array_map(function ($exampleValue) use ($columnName) {
-                        return $exampleValue->{$columnName};
+                        $string = $exampleValue->{$columnName};
+                        if (strlen($string) > 30) {
+                            $string = substr($string, 0, 30) . '...';
+                        }
+                        return $string;
                     }, $this->db->table($tableName)->whereNotNull($columnName)->distinct()->inRandomOrder()->limit(3)->get([$columnName])->toArray());
                     $candidates[] = [$tableName, $columnName, $formatter, implode(', ', $exampleValues)];
                 }
