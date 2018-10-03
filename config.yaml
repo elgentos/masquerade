@@ -1,6 +1,0 @@
-platform: magento2
-database: all4honda
-username: peterjaap
-prefix: a4h_
-password: 
-host: db
