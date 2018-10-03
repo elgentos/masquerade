@@ -125,14 +125,12 @@ class IdentifyCommand extends Command
     private function setup()
     {
         $this->configHelper = new Config();
-        if (file_exists('config.yaml')) {
-            $databaseConfig = $this->configHelper->readYamlFile('.', 'config.yaml');
-        }
+        $databaseConfig = $this->configHelper->readConfigFile();
 
         $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
 
         if (!$this->platformName) {
-            throw new \Exception('No platformName set, use option --platform or set it in config.yaml');
+            throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
         }
 
         $this->config = $this->configHelper->getConfig($this->platformName);

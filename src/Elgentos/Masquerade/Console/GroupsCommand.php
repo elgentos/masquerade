@@ -44,11 +44,10 @@ class GroupsCommand extends Command
     }
 
     /**
-     * Execute the console command.
-     *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return mixed
+     * @return int|null|void
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -83,14 +82,12 @@ class GroupsCommand extends Command
     private function setup()
     {
         $this->configHelper = new Config();
-        if (file_exists('config.yaml')) {
-            $databaseConfig = $this->configHelper->readYamlFile('.', 'config.yaml');
-        }
+        $databaseConfig = $this->configHelper->readConfigFile();
 
         $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
 
         if (!$this->platformName) {
-            throw new \Exception('No platformName set, use option --platform or set it in config.yaml');
+            throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
         }
 
         $this->config = $this->configHelper->getConfig($this->platformName);

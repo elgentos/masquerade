@@ -21,7 +21,6 @@
                 "doctrine/cache",
                 "doctrine/annotations",
                 "symfony/translation",
-                "illuminate/contracts",
                 "nesbot"
             ],
             "in": "vendor"
