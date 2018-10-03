@@ -64,6 +64,11 @@ class RunCommand extends Command
     protected $configHelper;
 
     /**
+     * @var array
+     */
+    protected $fakerInstanceCache;
+
+    /**
      *
      */
     protected function configure()
@@ -169,7 +174,14 @@ class RunCommand extends Command
                     }
 
                     try {
-                        $updates[$columnName] = $this->getFakerInstance($columnData, $providerClassName)->{$formatter}(...$options);
+                        $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
+                        if (array_get($columnData, 'unique', false)) {
+                            $updates[$columnName] = $fakerInstance->unique()->{$formatter}(...$options);
+                        } elseif(array_get($columnData, 'optional', false)) {
+                            $updates[$columnName] = $fakerInstance->optional()->{$formatter}(...$options);
+                        } else {
+                            $updates[$columnName] = $fakerInstance->{$formatter}(...$options);
+                        }
                     } catch (\InvalidArgumentException $e) {
                         // If InvalidArgumentException is thrown, formatter is not found, use null instead
                         $updates[$columnName] = null;
@@ -252,6 +264,11 @@ class RunCommand extends Command
      */
     private function getFakerInstance(array $columnData, $providerClassName = false) : Generator
     {
+        $key = md5(serialize($columnData) . $providerClassName);
+        if (isset($this->fakerInstanceCache[$key])) {
+            return $this->fakerInstanceCache[$key];
+        }
+
         $fakerInstance = FakerFactory::create($this->locale);
 
         $provider = false;
@@ -266,15 +283,7 @@ class RunCommand extends Command
             $fakerInstance->addProvider($provider);
         }
 
-        if (array_get($columnData, 'unique', false)) {
-            $fakerInstance->unique();
-        }
-        if (array_get($columnData, 'optional', false)) {
-            $fakerInstance->optional();
-        }
-        if (array_get($columnData, 'valid', false)) {
-            $fakerInstance->valid();
-        }
+        $this->fakerInstanceCache[$key] = $fakerInstance;
 
         return $fakerInstance;
     }
