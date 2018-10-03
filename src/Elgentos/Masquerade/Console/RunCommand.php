@@ -20,7 +20,7 @@ class RunCommand extends Command
             |
                    by elgentos';
 
-    const VERSION = '0.1.2';
+    const VERSION = '0.1.3';
 
     protected $config;
 
