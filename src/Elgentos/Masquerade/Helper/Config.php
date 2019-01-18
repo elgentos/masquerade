@@ -2,17 +2,8 @@
 
 namespace Elgentos\Masquerade\Helper;
 
-use Elgentos\Parser\Context;
-use Elgentos\Parser\Matcher\IsRegExp;
-use Elgentos\Parser\Matcher\IsString;
-use Elgentos\Parser\Matcher\MatchAll;
-use Elgentos\Parser\Rule\Glob;
-use Elgentos\Parser\Rule\Import;
-use Elgentos\Parser\Rule\Iterate;
-use Elgentos\Parser\Rule\LoopAll;
-use Elgentos\Parser\Rule\MergeDown;
-use Elgentos\Parser\Rule\NoLogic;
-use Elgentos\Parser\Rule\Yaml;
+use Elgentos\Parser;
+use Elgentos\Parser\Standard;
 use Phar;
 
 class Config {
@@ -31,26 +22,6 @@ class Config {
      */
     const CONFIG_YAML = 'config.yaml';
 
-    public function readYamlFile(string $rootDir, string $file) : array
-    {
-        $data = [
-            '@glob' => $file
-        ];
-
-        $context = new Context($data);
-
-        $rule = new LoopAll(
-            new Import($rootDir),
-            new Yaml(),
-            new MergeDown(true),
-            new NoLogic(false)
-        );
-
-        $rule->parse($context);
-
-        return $data;
-    }
-
     public function readConfigFile() {
         $dirs = $this->getExistingConfigDirs();
         $dirs = array_merge(['.'], $dirs);
@@ -58,7 +29,7 @@ class Config {
         $config = [];
         foreach ($dirs as $dir) {
             if (file_exists($dir . '/' . self::CONFIG_YAML)) {
-                $content = $this->readYamlFile($dir, self::CONFIG_YAML);
+                $content =  Parser::readFile(self::CONFIG_YAML, $dir);
                 $config = array_merge($config, $content);
             }
         }
@@ -73,33 +44,8 @@ class Config {
      */
     public function readYamlDir(string $rootDir, string $dir) : array
     {
-        $data = [
-            '@glob' => $dir
-        ];
-
-        $context = new Context($data);
-
-        $rule = new LoopAll(
-            new Glob($rootDir),
-            new Iterate(
-                new LoopAll(
-                    new Import(
-                        $rootDir,
-                        new MatchAll(
-                            new IsString(),
-                            new IsRegExp('#.yaml$#')
-                        )
-                    ),
-                    new Yaml(),
-                    new MergeDown(true)
-                ),
-                false
-            ),
-            new MergeDown(true),
-            new NoLogic(false)
-        );
-
-        $rule->parse($context);
+        $data = [['@import-dir' => $dir]];
+        (new Standard)->parse($data, 'reader', $rootDir);
 
         return $data;
     }
@@ -108,7 +54,7 @@ class Config {
     {
         // Get config
         $config = [];
-        $dirs = $this->getExistingConfigDirs($platformName);
+        $dirs = $this->getExistingConfigDirs();
 
         $dirs = array_filter($dirs, function ($dir) use ($platformName) {
             return file_exists($dir . '/' . $platformName)
