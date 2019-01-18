@@ -8,6 +8,11 @@ use Elgentos\Masquerade\Console\RunCommand;
 use Elgentos\Masquerade\Console\IdentifyCommand;
 use Elgentos\Masquerade\Application;
 
+if (version_compare(PHP_VERSION, '7.1.3', '<')) {
+    echo "\033[0;31m Please update your PHP version. Required: 7.1.3. Available: " . PHP_VERSION . "\033[0m" . PHP_EOL;
+    die(255);
+};
+
 $application = new Application(RunCommand::LOGO, RunCommand::VERSION);
 
 $application->add(new GroupsCommand);
