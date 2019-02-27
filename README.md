@@ -58,7 +58,7 @@ customer:
 Download the phar file:
 
 ```
-wget https://github.com/elgentos/masquerade/raw/master/dist/masquerade.phar 
+wget https://github.com/elgentos/masquerade/releases/download/{VERSION}/masquerade.phar
 ```
 
 ### Usage
@@ -216,8 +216,7 @@ curl -LSs https://box-project.github.io/box2/installer.php | php
 composer update
 chmod u+x build.sh
 ./build.sh
-chmod u+x bin/masquerade
-./bin/masquerade --help
+bin/masquerade
 ```
 
 ## Generating a new release changelog

@@ -2,9 +2,9 @@
 
 namespace Elgentos\Masquerade\Console;
 
-use Phar;
+use Elgentos\Masquerade\Helper\Config;
+use Faker\Generator;
 use Symfony\Component\Console\Command\Command;
-use Noodlehaus\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,6 +16,14 @@ use Jack\Symfony\ProcessManager;
 
 class RunCommand extends Command
 {
+    const LOGO = '                              
+._ _  _. _ _.    _ .__. _| _  
+| | |(_|_>(_||_|(/_|(_|(_|(/_ 
+            |
+                   by elgentos';
+
+    const VERSION = '0.1.7';
+
     protected $config;
 
     /**
@@ -30,14 +38,6 @@ class RunCommand extends Command
 
     protected $platformName;
     protected $locale;
-
-    const LOGO = '                              
-._ _  _. _ _.    _ .__. _| _  
-| | |(_|_>(_||_|(/_|(_|(_|(/_ 
-            |
-                   by elgentos';
-
-    const VERSION = '0.1.1';
 
     /**
      * @var \Illuminate\Database\Connection
@@ -59,6 +59,16 @@ class RunCommand extends Command
      * @var string
      */
     protected $description = 'Run masquerade for a specific platform and group(s)';
+
+    /**
+     * @var Config
+     */
+    protected $configHelper;
+
+    /**
+     * @var array
+     */
+    protected $fakerInstanceCache;
 
     /**
      *
@@ -127,9 +137,9 @@ class RunCommand extends Command
     }
 
     /**
-     * @param $table
+     * @param array $table
      */
-    private function fakeData($table)
+    private function fakeData(array $table) : void
     {
         if (!$this->db->getSchemaBuilder()->hasTable($table['name'])) {
             $this->output->writeln('Table ' . $table['name'] . ' does not exist.');
@@ -153,14 +163,14 @@ class RunCommand extends Command
 
         $primaryKey = array_get($table, 'pk', 'entity_id');
 
-        $this->db->table($table['name'])->orderBy($primaryKey)->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey) {
-            // Null columns before run to avoid integrity constrains errors
-            foreach ($table['columns'] as $columnName => $columnData) {
-                if (array_get($columnData, 'nullColumnBeforeRun', false)) {
-                    $this->db->table($table['name'])->update([$columnName => null]);
-                }
+        // Null columns before run to avoid integrity constrains errors
+        foreach ($table['columns'] as $columnName => $columnData) {
+            if (array_get($columnData, 'nullColumnBeforeRun', false)) {
+                $this->db->table($table['name'])->update([$columnName => null]);
             }
+        }
 
+        $this->db->table($table['name'])->orderBy($primaryKey)->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey) {
             foreach ($rows as $row) {
                 $updates = [];
                 foreach ($table['columns'] as $columnName => $columnData) {
@@ -183,7 +193,14 @@ class RunCommand extends Command
                     }
 
                     try {
-                        $updates[$columnName] = $this->getFakerInstance($columnData, $providerClassName)->{$formatter}(...$options);
+                        $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
+                        if (array_get($columnData, 'unique', false)) {
+                            $updates[$columnName] = $fakerInstance->unique()->{$formatter}(...$options);
+                        } elseif(array_get($columnData, 'optional', false)) {
+                            $updates[$columnName] = $fakerInstance->optional()->{$formatter}(...$options);
+                        } else {
+                            $updates[$columnName] = $fakerInstance->{$formatter}(...$options);
+                        }
                     } catch (\InvalidArgumentException $e) {
                         // If InvalidArgumentException is thrown, formatter is not found, use null instead
                         $updates[$columnName] = null;
@@ -204,25 +221,17 @@ class RunCommand extends Command
      */
     private function setup()
     {
-        if (file_exists('config.yaml')) {
-            $databaseConfig = new Config('config.yaml');
-        }
+        $this->configHelper = new Config();
+
+        $databaseConfig = $this->configHelper->readConfigFile();
 
         $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
 
         if (!$this->platformName) {
-            throw new \Exception('No platformName set, use option --platform or set it in config.yaml');
+            throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
         }
 
-        // Get default config
-        $config = new Config($this->getConfigFiles($this->platformName));
-        $this->config = $config->all();
-
-        // Get custom config
-        if (file_exists('config') && is_dir('config')) {
-            $customConfig = new Config(sprintf('config/%s', $this->platformName));
-            $this->config = array_merge($config->all(), $customConfig->all());
-        }
+        $this->config = $this->configHelper->getConfig($this->platformName);
 
         $host = $databaseConfig['host'] ?? $this->input->getOption('host') ?? 'localhost';
         $driver = $databaseConfig['driver'] ?? $this->input->getOption('driver') ?? 'mysql';
@@ -266,15 +275,19 @@ class RunCommand extends Command
     }
 
     /**
-     * @param $columnName
-     * @param $columnData
+     * @param array $columnData
      * @param bool $providerClassName
-     * @return mixed
+     * @return Generator
      * @throws \Exception
      * @internal param bool $provider
      */
-    private function getFakerInstance($columnData, $providerClassName = false)
+    private function getFakerInstance(array $columnData, $providerClassName = false) : Generator
     {
+        $key = md5(serialize($columnData) . $providerClassName);
+        if (isset($this->fakerInstanceCache[$key])) {
+            return $this->fakerInstanceCache[$key];
+        }
+
         $fakerInstance = FakerFactory::create($this->locale);
 
         $provider = false;
@@ -289,48 +302,16 @@ class RunCommand extends Command
             $fakerInstance->addProvider($provider);
         }
 
-        if (array_get($columnData, 'unique', false)) {
-            $fakerInstance->unique();
-        }
-        if (array_get($columnData, 'optional', false)) {
-            $fakerInstance->optional();
-        }
-        if (array_get($columnData, 'valid', false)) {
-            $fakerInstance->valid();
-        }
+        $this->fakerInstanceCache[$key] = $fakerInstance;
 
         return $fakerInstance;
     }
 
     /**
-     * @return bool
+     * @param int $totalRows
+     * @return int
      */
-    private function isPhar() {
-        return strlen(Phar::running()) > 0 ? true : false;
-    }
-
-    /**
-     * @param $platformName
-     * @return array
-     */
-    private function getConfigFiles($platformName)
-    {
-        // Unfortunately, glob() does not work when using a phar and hassankhan/config relies on glob.
-        // Therefore, we have to scan the dir ourselves when using the phar
-        if ($this->isPhar()) {
-            $configDir = 'phar://masquerade.phar/src/config/' . $platformName;
-        } else {
-            $configDir = __DIR__ . '/../../../config/' . $platformName;
-        }
-
-        $files = array_slice(scandir($configDir), 2);
-
-        return array_map(function ($file) use ($configDir) {
-            return $configDir . '/' . $file;
-        }, $files);
-    }
-
-    private function calculateRedrawFrequency($totalRows)
+    private function calculateRedrawFrequency(int $totalRows) : int
     {
         $percentage = 10;
 
@@ -346,6 +327,7 @@ class RunCommand extends Command
             $percentage = 0.001;
         }
 
-        return ceil($totalRows * $percentage);
+        return (int) ceil($totalRows * $percentage);
     }
+
 }

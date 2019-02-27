@@ -1,0 +1,10 @@
+rating:
+  rating_option_vote:
+    pk: vote_id
+    columns:
+      remote_ip:
+        formatter: remote_ip
+      remote_ip_long:
+        formatter:
+          name: fixed
+          value:
