@@ -131,7 +131,7 @@ class IdentifyCommand extends Command
         $this->configHelper = new Config();
         $databaseConfig = $this->configHelper->readConfigFile();
 
-        $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
+        $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'];
 
         if (!$this->platformName) {
             throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);

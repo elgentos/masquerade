@@ -20,7 +20,7 @@ class RunCommand extends Command
             |
                    by elgentos';
 
-    const VERSION = '0.1.7';
+    const VERSION = '0.1.9';
 
     protected $config;
 
@@ -206,7 +206,7 @@ class RunCommand extends Command
 
         $databaseConfig = $this->configHelper->readConfigFile();
 
-        $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
+        $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'];
 
         if (!$this->platformName) {
             throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
@@ -219,7 +219,7 @@ class RunCommand extends Command
         $database = $this->input->getOption('database') ?? $databaseConfig['database'];
         $username = $this->input->getOption('username') ?? $databaseConfig['username'];
         $password = $this->input->getOption('password') ?? $databaseConfig['password'];
-        $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'];
+        $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'] ?? '';
         $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
 
         $errors = [];
@@ -250,7 +250,7 @@ class RunCommand extends Command
         $this->db = $capsule->getConnection();
         $this->db->statement('SET FOREIGN_KEY_CHECKS=0');
 
-        $this->locale = $databaseConfig['locale'] ?? $this->input->getOption('locale') ?? 'en_US';
+        $this->locale = $this->input->getOption('locale') ?? $databaseConfig['locale'] ?? 'en_US';
 
         $this->group = array_filter(array_map('trim', explode(',', $this->input->getOption('group'))));
     }
