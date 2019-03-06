@@ -4,6 +4,7 @@ namespace Elgentos\Masquerade\Helper;
 
 use Elgentos\Parser;
 use Elgentos\Parser\Standard;
+use Elgentos\Parser\Stories\Reader\Complex;
 use Phar;
 
 class Config {
@@ -45,7 +46,9 @@ class Config {
     public function readYamlDir(string $rootDir, string $dir) : array
     {
         $data = [['@import-dir' => $dir]];
-        (new Standard)->parse($data, 'reader', $rootDir);
+
+        $story = new Complex($rootDir);
+        (new Standard)->parse($data, $story);
 
         return $data;
     }
