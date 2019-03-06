@@ -48,8 +48,6 @@ customer:
     columns:
       name:
         formatter: name
-      firstname:
-        formatter: firstName
       email:
         formatter: email
         unique: true
