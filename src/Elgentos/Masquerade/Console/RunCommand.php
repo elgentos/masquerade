@@ -214,13 +214,13 @@ class RunCommand extends Command
 
         $this->config = $this->configHelper->getConfig($this->platformName);
 
-        $host = $databaseConfig['host'] ?? $this->input->getOption('host') ?? 'localhost';
-        $driver = $databaseConfig['driver'] ?? $this->input->getOption('driver') ?? 'mysql';
-        $database = $databaseConfig['database'] ?? $this->input->getOption('database');
-        $username = $databaseConfig['username'] ?? $this->input->getOption('username');
-        $password = $databaseConfig['password'] ?? $this->input->getOption('password');
-        $prefix = $databaseConfig['prefix'] ?? $this->input->getOption('prefix');
-        $charset = $databaseConfig['charset'] ?? $this->input->getOption('charset') ?? 'utf8';
+        $host = $this->input->getOption('host') ?? $databaseConfig['host'] ?? 'localhost';
+        $driver = $this->input->getOption('driver') ?? $databaseConfig['driver'] ?? 'mysql';
+        $database = $this->input->getOption('database') ?? $databaseConfig['database'];
+        $username = $this->input->getOption('username') ?? $databaseConfig['username'];
+        $password = $this->input->getOption('password') ?? $databaseConfig['password'];
+        $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'];
+        $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
 
         $errors = [];
         if (!$host) {
