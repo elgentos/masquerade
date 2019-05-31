@@ -144,7 +144,7 @@ class IdentifyCommand extends Command
         $database = $this->input->getOption('database') ?? $databaseConfig['database'];
         $username = $this->input->getOption('username') ?? $databaseConfig['username'];
         $password = $this->input->getOption('password') ?? $databaseConfig['password'];
-        $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'];
+        $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'] ?? '';
         $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
 
         $errors = [];
