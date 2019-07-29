@@ -206,7 +206,7 @@ class RunCommand extends Command
 
         $databaseConfig = $this->configHelper->readConfigFile();
 
-        $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'];
+        $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'] ?? null;
 
         if (!$this->platformName) {
             throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
@@ -216,9 +216,9 @@ class RunCommand extends Command
 
         $host = $this->input->getOption('host') ?? $databaseConfig['host'] ?? 'localhost';
         $driver = $this->input->getOption('driver') ?? $databaseConfig['driver'] ?? 'mysql';
-        $database = $this->input->getOption('database') ?? $databaseConfig['database'];
-        $username = $this->input->getOption('username') ?? $databaseConfig['username'];
-        $password = $this->input->getOption('password') ?? $databaseConfig['password'];
+        $database = $this->input->getOption('database') ?? $databaseConfig['database'] ?? null;
+        $username = $this->input->getOption('username') ?? $databaseConfig['username'] ?? null;
+        $password = $this->input->getOption('password') ?? $databaseConfig['password'] ?? null;
         $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'] ?? '';
         $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
 
