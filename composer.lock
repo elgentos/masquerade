@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2daac11b590bbc5a2bbdfc2f118c868e",
+    "content-hash": "9a162ae6fa2f5fd13f664756b804dae9",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -486,20 +486,20 @@
         },
         {
             "name": "elgentos/parser",
-            "version": "2.4.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elgentos/parser.git",
-                "reference": "ff55d6bac500409e580f773a9acc1b713f8401d8"
+                "reference": "e7bb6ec6a75856544a3daab6e8bc5aa48eccff27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elgentos/parser/zipball/ff55d6bac500409e580f773a9acc1b713f8401d8",
-                "reference": "ff55d6bac500409e580f773a9acc1b713f8401d8",
+                "url": "https://api.github.com/repos/elgentos/parser/zipball/e7bb6ec6a75856544a3daab6e8bc5aa48eccff27",
+                "reference": "e7bb6ec6a75856544a3daab6e8bc5aa48eccff27",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.0"
+                "php": ">=7.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^6.0",
@@ -529,7 +529,7 @@
             ],
             "description": "Elgentos Parser for json/yaml files to readable array",
             "homepage": "https://elgentos.nl/",
-            "time": "2018-11-28T16:39:19+00:00"
+            "time": "2019-05-02T15:48:29+00:00"
         },
         {
             "name": "fzaninotto/faker",
