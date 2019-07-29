@@ -13,7 +13,8 @@ class Config {
         __DIR__ . '/../../../config',
         'src/config/',
         '~/.masquerade/config',
-        'config'
+        '~/.config/masquerade',
+        'config',
     ];
 
     /**
@@ -77,13 +78,16 @@ class Config {
      * @param string $separator
      * @return string
      */
-    public function normalizePath($path, $separator = '\\/')
+    public function normalizePath(string $path, string $separator = '\\/'): string
     {
         // Remove any kind of funky unicode whitespace
         $normalized = preg_replace('#\p{C}+|^\./#u', '', $path);
 
         // Path remove self referring paths ("/./").
         $normalized = preg_replace('#/\.(?=/)|^\./|\./$#', '', $normalized);
+
+        // Replace ~ with full HOME path
+        $normalized = preg_replace('#^~#', $_SERVER['HOME'], $normalized);
 
         // Regex for resolving relative paths
         $regex = '#\/*[^/\.]+/\.\.#Uu';
@@ -96,7 +100,7 @@ class Config {
             throw new \Exception('Path is outside of the defined root, path: [' . $path . '], resolved: [' . $normalized . ']');
         }
 
-        return trim($normalized, $separator);
+        return rtrim($normalized, $separator);
     }
 
     /**
@@ -109,6 +113,7 @@ class Config {
             return file_exists($dir)
                 && is_dir($dir);
         });
+        
         return $dirs;
     }
 }
