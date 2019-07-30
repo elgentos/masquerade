@@ -1,0 +1,58 @@
+ee_sales_archive:
+  magento_sales_creditmemo_grid_archive:
+    columns:
+      customer_name:
+        formatter: name
+      billing_name:
+        formatter: name
+      billing_address:
+        formatter: address
+      shipping_address:
+        formatter: address
+      customer_email:
+        formatter: email
+
+  magento_sales_invoice_grid_archive:
+    columns:
+      customer_name:
+        formatter: name
+      billing_name:
+        formatter: name
+      billing_address:
+        formatter: address
+      shipping_address:
+        formatter: address
+      customer_email:
+        formatter: email
+
+  magento_sales_order_grid_archive:
+    columns:
+      customer_name:
+        formatter: name
+      billing_name:
+        formatter: name
+      shipping_name:
+        formatter: name
+      billing_address:
+        formatter: address
+      shipping_address:
+        formatter: address
+      customer_email:
+        formatter: email
+      postcode:
+        formatter: postcode
+
+  magento_sales_shipment_grid_archive:
+    columns:
+      customer_name:
+        formatter: name
+      billing_name:
+        formatter: name
+      shipping_name:
+        formatter: name
+      billing_address:
+        formatter: address
+      shipping_address:
+        formatter: address
+      customer_email:
+        formatter: email
