@@ -94,6 +94,10 @@ password: passhere
 host: localhost
 ``` 
 
+### Running it nightly
+
+Check out the wiki on [How to run Masquerade nightly with Gitlab CI/CD](https://github.com/elgentos/masquerade/wiki/How-to-run-Masquerade-nightly-with-Gitlab-CI-CD)
+
 #### Magento 2 out-of-the-box rule-set
 
 ```
