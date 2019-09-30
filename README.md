@@ -58,7 +58,7 @@ customer:
 Download the phar file:
 
 ```
-wget https://github.com/elgentos/masquerade/releases/download/{VERSION}/masquerade.phar
+wget https://github.com/elgentos/masquerade/releases/latest/download/masquerade.phar
 ```
 
 ### Usage
