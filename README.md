@@ -17,7 +17,7 @@ You can add your own configuration files in a directory named `config` in the sa
 
 See the [Magento 2 YAML files](https://github.com/elgentos/masquerade/tree/master/src/config/magento2) as examples for notation. 
 
-For example, to override the `admin.yaml`, you place a file in `config/magento2/admin.yaml`. For example, if you want to completely disable/skip a group, just add this content;
+For example, to override the `admin.yaml` for Magento 2, you place a file in `config/magento2/admin.yaml`. For example, if you want to completely disable/skip a group, just add this content;
 
 ```
 admin:
