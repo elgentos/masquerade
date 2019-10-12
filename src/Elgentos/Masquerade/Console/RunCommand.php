@@ -86,7 +86,6 @@ class RunCommand extends Command
             ->addOption('locale', null, InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
             ->addOption('group', null, InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]')
             ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]');
-
     }
 
     /**
@@ -166,7 +165,9 @@ class RunCommand extends Command
                         $options = array_values(array_slice($formatterData, 1));
                     }
 
-                    if (!$formatter) continue;
+                    if (!$formatter) {
+                        continue;
+                    }
 
                     if ($formatter == 'fixed') {
                         $updates[$columnName] = array_first($options);
@@ -177,7 +178,7 @@ class RunCommand extends Command
                         $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
                         if (array_get($columnData, 'unique', false)) {
                             $updates[$columnName] = $fakerInstance->unique()->{$formatter}(...$options);
-                        } elseif(array_get($columnData, 'optional', false)) {
+                        } elseif (array_get($columnData, 'optional', false)) {
                             $updates[$columnName] = $fakerInstance->optional()->{$formatter}(...$options);
                         } else {
                             $updates[$columnName] = $fakerInstance->{$formatter}(...$options);
@@ -310,5 +311,4 @@ class RunCommand extends Command
 
         return (int) ceil($totalRows * $percentage);
     }
-
 }

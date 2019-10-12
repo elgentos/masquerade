@@ -66,7 +66,9 @@ class GroupsCommand extends Command
                 $table['name'] = $tableName;
                 foreach ($table['columns'] as $columnName => $column) {
                     $formatter = $column['formatter'];
-                    if (is_array($formatter)) { $formatter = implode(', ', $formatter); }
+                    if (is_array($formatter)) {
+                        $formatter = implode(', ', $formatter);
+                    }
                     $rows[] = [$this->platformName, $groupName, $tableName, $columnName, $formatter];
                 }
             }
