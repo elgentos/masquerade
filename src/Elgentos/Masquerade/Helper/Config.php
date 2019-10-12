@@ -7,8 +7,8 @@ use Elgentos\Parser\Standard;
 use Elgentos\Parser\Stories\Reader\Complex;
 use Phar;
 
-class Config {
-
+class Config
+{
     protected $configDirs = [
         __DIR__ . '/../../../config',
         'src/config/',
@@ -24,7 +24,8 @@ class Config {
      */
     const CONFIG_YAML = 'config.yaml';
 
-    public function readConfigFile() {
+    public function readConfigFile()
+    {
         $dirs = $this->getExistingConfigDirs();
         $dirs = array_merge(['.'], $dirs);
 
