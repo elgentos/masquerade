@@ -295,5 +295,4 @@ class RunCommand extends AbstractCommand
 
         return (int) ceil($totalRows * $percentage);
     }
-
 }
