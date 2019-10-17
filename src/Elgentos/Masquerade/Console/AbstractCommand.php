@@ -19,6 +19,7 @@ abstract class AbstractCommand extends Command
     protected $platformName;
     protected $locale;
     protected $group = [];
+    protected $table = [];
 
     /** @var Connection */
     protected $db;
@@ -103,6 +104,10 @@ abstract class AbstractCommand extends Command
 
         if ($this->input->hasOption('group')) {
             $this->group = array_filter(array_map('trim', explode(',', $this->input->getOption('group'))));
+        }
+
+        if ($this->input->hasOption('table')) {
+            $this->table = array_filter(array_map('trim', explode(',', $this->input->getOption('table'))));
         }
     }
 

@@ -58,6 +58,7 @@ class RunCommand extends AbstractCommand
             ->addOption('prefix', 'pf', InputOption::VALUE_OPTIONAL, 'Database prefix [empty]')
             ->addOption('locale', 'l', InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
             ->addOption('group', 'g', InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]')
+            ->addOption('table', 't', InputOption::VALUE_OPTIONAL, 'Which table to run masquerade on [all]')
             ->addOption('charset', 'c', InputOption::VALUE_OPTIONAL, 'Database charset [utf8]')
             ->addOption('parallel', null, InputOption::VALUE_OPTIONAL, 'Started as parallel process? [false]', false);
     }
@@ -78,70 +79,97 @@ class RunCommand extends AbstractCommand
 
         ProgressBar::setFormatDefinition('custom', 'Anonymizing group %message% [%bar%]    %current%/%max% %percent:3s%% %elapsed:6s%/%estimated:-6s%');
 
-        if (!$this->input->getOption('parallel')) {
-            // Spawn sub processes
-            $subProcesses = [];
-            $progressBars = [];
-
-            foreach ($this->config as $groupName => $tables) {
-                if (!empty($this->group) && !in_array($groupName, $this->group)) {
-                    continue;
-                }
-
-                // Get total rows per group so we can show correct progress bars
-                $totalRowsForGroup = 0;
-                foreach ($tables as $tableName => $table) {
-                    if ($this->db->getSchemaBuilder()->hasTable($tableName)) {
-                        $totalRowsForGroup += $this->db->table($tableName)->count();
-                    }
-                }
-
-                // Skip groups with no rows/tables
-                if ($totalRowsForGroup === 0) {
-                    continue;
-                }
-
-                // Make a list of all sub processes that need to be spawned
-                // We abuse the options parameter to set the group name so we can update the correct progress bars in the callback
-                $subProcesses[$groupName] = new Process('bin/masquerade run --parallel=true --group=' . $groupName, null, null, null, null, ['group' => $groupName]);
-
-                // Create progressbar for this group and add it to the progressbars array
-                $section = $this->output->section();
-                $progressBar = new ProgressBar($section, $totalRowsForGroup);
-                $longestKeyLength = max(array_map('strlen', array_keys($this->config)));
-                $progressBar->setMessage(str_pad($groupName, $longestKeyLength+2));
-                $progressBar->setFormat('custom');
-                $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRowsForGroup));
-                $progressBar->start();
-                $progressBars[$groupName] = $progressBar;
-            }
-
-            // Create a process manager and start all sub processes
-            $processManager = new ProcessManager();
-            $processManager->runParallel(
-                $subProcesses,
-                count($this->config),
-                1000,
-                function ($type, $output, $process) use ($progressBars) {
-                    /** @var $process Process */
-                    $groupName = $process->getOptions()['group'];
-                    /** @var ProgressBar $progressBar */
-                    $progressBar = $progressBars[$groupName];
-                    $progressBar->advance();
-                }
-            );
-        } else {
+        if ($this->input->getOption('parallel')) {
             // Do the actual work: fake data for this parallel process
             foreach ($this->config as $groupName => $tables) {
                 if (!empty($this->group) && !in_array($groupName, $this->group)) {
                     continue;
                 }
                 foreach ($tables as $tableName => $table) {
+                    if (!empty($this->table) && !in_array($tableName, $this->table)) {
+                        continue;
+                    }
                     $table['name'] = $tableName;
                     $this->fakeData($table);
                 }
             }
+            return;
         }
+
+        $this->spawnSubProcesses();
+    }
+
+    /**
+     *
+     */
+    protected function spawnSubProcesses(): void
+    {
+        $subProcesses = [];
+        $progressBars = [];
+
+        $longestKeyLength = 0;
+        foreach ($this->config as $groupName => $tables) {
+            foreach ($tables as $tableName => $table) {
+                $longestKeyLength = max($longestKeyLength, strlen($groupName . '_' . $tableName));
+            }
+        }
+
+        foreach ($this->config as $groupName => $tables) {
+            if (!empty($this->group) && !in_array($groupName, $this->group)) {
+                continue;
+            }
+
+            // Make a list of all sub processes that need to be spawned
+            // We abuse the options parameter to set the group name so we can update the correct progress bars in the callback
+            foreach ($tables as $tableName => $table) {
+                $totalRowsForGroupTable = 0;
+                if ($this->db->getSchemaBuilder()->hasTable($tableName)) {
+                    $totalRowsForGroupTable = $this->db->table($tableName)->count();
+                }
+
+                // Skip groups with no rows/tables
+                if ($totalRowsForGroupTable === 0) {
+                    continue;
+                }
+
+                // Define sub process
+                $subProcesses[$groupName.'_'.$tableName] = new Process('bin/masquerade run --parallel=true --group=' . $groupName . ' --table=' . $tableName,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ['group' => $groupName, 'table' => $tableName]
+                );
+
+                // Create progressbar for this sub process and add it to the progress bars array
+                $section = $this->output->section();
+                $progressBar = new ProgressBar($section, $totalRowsForGroupTable);
+                $progressBar->setMessage(str_pad($groupName . '.' . $tableName, $longestKeyLength + 2));
+                $progressBar->setFormat('custom');
+                $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRowsForGroupTable));
+                $progressBar->start();
+                $progressBars[$groupName.'_'.$tableName] = $progressBar;
+            }
+        }
+
+        // Create a process manager and start all sub processes
+        $processManager = new ProcessManager();
+        $processManager->runParallel(
+            $subProcesses,
+            count($this->config),
+            1000,
+            function ($type, $output, $process) use ($progressBars) {
+                /** @var $process Process */
+                $groupName = $process->getOptions()['group'];
+                $tableName = $process->getOptions()['table'];
+
+                //$this->output->write($output);
+
+                /** @var ProgressBar $progressBar */
+                $progressBar = $progressBars[$groupName.'_'.$tableName];
+                $progressBar->advance();
+            }
+        );
     }
 
     /**
@@ -267,4 +295,5 @@ class RunCommand extends AbstractCommand
 
         return (int) ceil($totalRows * $percentage);
     }
+
 }
