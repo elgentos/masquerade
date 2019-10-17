@@ -118,7 +118,9 @@ class RunCommand extends Command
 
             $processManager = new ProcessManager();
             $output->writeln('Starting max ' . count($this->config) . ' processes..');
-            $processManager->runParallel($processes, count($this->config), 1000, function ($type, $output, $process) { echo $output; });
+            $processManager->runParallel($processes, count($this->config), 1000, function ($type, $output, $process) {
+                echo $output;
+            });
         } else {
             // Fake data
             foreach ($this->config as $groupName => $tables) {
