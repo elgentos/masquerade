@@ -66,7 +66,9 @@ class GroupsCommand extends Command
                 $table['name'] = $tableName;
                 foreach ($table['columns'] as $columnName => $column) {
                     $formatter = $column['formatter'];
-                    if (is_array($formatter)) { $formatter = implode(', ', $formatter); }
+                    if (is_array($formatter)) {
+                        $formatter = implode(', ', $formatter);
+                    }
                     $rows[] = [$this->platformName, $groupName, $tableName, $columnName, $formatter];
                 }
             }
@@ -84,7 +86,7 @@ class GroupsCommand extends Command
         $this->configHelper = new Config();
         $databaseConfig = $this->configHelper->readConfigFile();
 
-        $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
+        $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'];
 
         if (!$this->platformName) {
             throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);

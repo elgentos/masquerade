@@ -4,15 +4,17 @@ namespace Elgentos\Masquerade\Helper;
 
 use Elgentos\Parser;
 use Elgentos\Parser\Standard;
+use Elgentos\Parser\Stories\Reader\Complex;
 use Phar;
 
-class Config {
-
+class Config
+{
     protected $configDirs = [
         __DIR__ . '/../../../config',
         'src/config/',
         '~/.masquerade/config',
-        'config'
+        '~/.config/masquerade',
+        'config',
     ];
 
     /**
@@ -22,7 +24,8 @@ class Config {
      */
     const CONFIG_YAML = 'config.yaml';
 
-    public function readConfigFile() {
+    public function readConfigFile()
+    {
         $dirs = $this->getExistingConfigDirs();
         $dirs = array_merge(['.'], $dirs);
 
@@ -45,7 +48,9 @@ class Config {
     public function readYamlDir(string $rootDir, string $dir) : array
     {
         $data = [['@import-dir' => $dir]];
-        (new Standard)->parse($data, 'reader', $rootDir);
+
+        $story = new Complex($rootDir);
+        (new Standard)->parse($data, $story);
 
         return $data;
     }
@@ -74,13 +79,16 @@ class Config {
      * @param string $separator
      * @return string
      */
-    public function normalizePath($path, $separator = '\\/')
+    public function normalizePath(string $path, string $separator = '\\/'): string
     {
         // Remove any kind of funky unicode whitespace
         $normalized = preg_replace('#\p{C}+|^\./#u', '', $path);
 
         // Path remove self referring paths ("/./").
         $normalized = preg_replace('#/\.(?=/)|^\./|\./$#', '', $normalized);
+
+        // Replace ~ with full HOME path
+        $normalized = preg_replace('#^~#', $_SERVER['HOME'], $normalized);
 
         // Regex for resolving relative paths
         $regex = '#\/*[^/\.]+/\.\.#Uu';
@@ -93,7 +101,7 @@ class Config {
             throw new \Exception('Path is outside of the defined root, path: [' . $path . '], resolved: [' . $normalized . ']');
         }
 
-        return trim($normalized, $separator);
+        return rtrim($normalized, $separator);
     }
 
     /**
@@ -106,6 +114,7 @@ class Config {
             return file_exists($dir)
                 && is_dir($dir);
         });
+        
         return $dirs;
     }
 }

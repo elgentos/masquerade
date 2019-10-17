@@ -22,7 +22,7 @@ class RunCommand extends Command
             |
                    by elgentos';
 
-    const VERSION = '0.1.7';
+    const VERSION = '0.1.9';
 
     protected $config;
 
@@ -88,7 +88,6 @@ class RunCommand extends Command
             ->addOption('locale', null, InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
             ->addOption('group', null, InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]')
             ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]');
-
     }
 
     /**
@@ -185,7 +184,9 @@ class RunCommand extends Command
                         $options = array_values(array_slice($formatterData, 1));
                     }
 
-                    if (!$formatter) continue;
+                    if (!$formatter) {
+                        continue;
+                    }
 
                     if ($formatter == 'fixed') {
                         $updates[$columnName] = array_first($options);
@@ -196,7 +197,7 @@ class RunCommand extends Command
                         $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
                         if (array_get($columnData, 'unique', false)) {
                             $updates[$columnName] = $fakerInstance->unique()->{$formatter}(...$options);
-                        } elseif(array_get($columnData, 'optional', false)) {
+                        } elseif (array_get($columnData, 'optional', false)) {
                             $updates[$columnName] = $fakerInstance->optional()->{$formatter}(...$options);
                         } else {
                             $updates[$columnName] = $fakerInstance->{$formatter}(...$options);
@@ -225,7 +226,7 @@ class RunCommand extends Command
 
         $databaseConfig = $this->configHelper->readConfigFile();
 
-        $this->platformName = $databaseConfig['platform'] ?? $this->input->getOption('platform');
+        $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'] ?? null;
 
         if (!$this->platformName) {
             throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
@@ -233,13 +234,13 @@ class RunCommand extends Command
 
         $this->config = $this->configHelper->getConfig($this->platformName);
 
-        $host = $databaseConfig['host'] ?? $this->input->getOption('host') ?? 'localhost';
-        $driver = $databaseConfig['driver'] ?? $this->input->getOption('driver') ?? 'mysql';
-        $database = $databaseConfig['database'] ?? $this->input->getOption('database');
-        $username = $databaseConfig['username'] ?? $this->input->getOption('username');
-        $password = $databaseConfig['password'] ?? $this->input->getOption('password');
-        $prefix = $databaseConfig['prefix'] ?? $this->input->getOption('prefix');
-        $charset = $databaseConfig['charset'] ?? $this->input->getOption('charset') ?? 'utf8';
+        $host = $this->input->getOption('host') ?? $databaseConfig['host'] ?? 'localhost';
+        $driver = $this->input->getOption('driver') ?? $databaseConfig['driver'] ?? 'mysql';
+        $database = $this->input->getOption('database') ?? $databaseConfig['database'] ?? null;
+        $username = $this->input->getOption('username') ?? $databaseConfig['username'] ?? null;
+        $password = $this->input->getOption('password') ?? $databaseConfig['password'] ?? null;
+        $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'] ?? '';
+        $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
 
         $errors = [];
         if (!$host) {
@@ -269,7 +270,7 @@ class RunCommand extends Command
         $this->db = $capsule->getConnection();
         $this->db->statement('SET FOREIGN_KEY_CHECKS=0');
 
-        $this->locale = $databaseConfig['locale'] ?? $this->input->getOption('locale') ?? 'en_US';
+        $this->locale = $this->input->getOption('locale') ?? $databaseConfig['locale'] ?? 'en_US';
 
         $this->group = array_filter(array_map('trim', explode(',', $this->input->getOption('group'))));
     }
@@ -329,5 +330,4 @@ class RunCommand extends Command
 
         return (int) ceil($totalRows * $percentage);
     }
-
 }

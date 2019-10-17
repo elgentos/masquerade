@@ -8,7 +8,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends SymfonyApplication
 {
-
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
         $this->registerAutoloader();
@@ -18,7 +17,7 @@ class Application extends SymfonyApplication
     private function registerAutoloader()
     {
         spl_autoload_register(function ($class) {
-            $class = str_replace('\\','/', $class);
+            $class = str_replace('\\', '/', $class);
 
             $pathPrefixToLookForCustomFormatters = [
                 '',
@@ -35,5 +34,4 @@ class Application extends SymfonyApplication
             }
         });
     }
-
 }

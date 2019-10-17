@@ -1,12 +1,16 @@
+<p align="center">
+    <img width="400" height="125" src="https://raw.githubusercontent.com/elgentos/masquerade/master/art/logo.png" alt="Masquerade logo" />
+</p>
+
 # Masquerade
 
 ## Faker-driven, platform-agnostic, locale-compatible data faker tool
 
-Point Masquerade to a database, give it a rule-set defined in YAML and Masquerade will anonymize the data for you 
+Point Masquerade to a database, give it a rule-set defined in YAML and Masquerade will anonymize the data for you
  automatically!
- 
+
 <img src="https://user-images.githubusercontent.com/431360/42574650-30e8d186-851f-11e8-9693-c23b426c43f2.png" width="600" />
- 
+
 ### Out-of-the-box supported frameworks
 
 - Magento 2
@@ -15,7 +19,13 @@ Point Masquerade to a database, give it a rule-set defined in YAML and Masquerad
 
 You can add your own configuration files in a directory named `config` in the same directory as where you run masquerade. The configuration files will be merged with any already present configuration files for that platform, overriding any out-of-the-box values.
 
-See the [Magento 2 YAML files](https://github.com/elgentos/masquerade/tree/master/src/config/magento2) as examples for notation. 
+See the [Magento 2 YAML files](https://github.com/elgentos/masquerade/tree/master/src/config/magento2) as examples for notation.
+
+For example, to override the `admin.yaml` for Magento 2, you place a file in `config/magento2/admin.yaml`. For example, if you want to completely disable/skip a group, just add this content;
+
+```
+admin:
+```
 
 For formatters, you can use all default [Faker formatters](https://github.com/fzaninotto/Faker#formatters).
 
@@ -49,16 +59,16 @@ customer:
     columns:
       firstname:
         provider: \Custom\WoopFormatter
-        formatter: 
+        formatter:
           name: woopwoop
-```  
- 
+```
+
 ### Installation
 
 Download the phar file:
 
 ```
-wget https://github.com/elgentos/masquerade/releases/download/{VERSION}/masquerade.phar
+wget https://github.com/elgentos/masquerade/releases/latest/download/masquerade.phar
 ```
 
 ### Usage
@@ -73,11 +83,11 @@ Usage:
   run [options]
 
 Options:
-      --platform[=PLATFORM]  
+      --platform[=PLATFORM]
       --driver[=DRIVER]      Database driver [mysql]
-      --database[=DATABASE]  
-      --username[=USERNAME]  
-      --password[=PASSWORD]  
+      --database[=DATABASE]
+      --username[=USERNAME]
+      --password[=PASSWORD]
       --host[=HOST]          Database host [localhost]
       --prefix[=PREFIX]      Database prefix [empty]
       --locale[=LOCALE]      Locale for Faker data [en_US]
@@ -92,7 +102,11 @@ database: dbnamehere
 username: userhere
 password: passhere
 host: localhost
-``` 
+```
+
+### Running it nightly
+
+Check out the wiki on [How to run Masquerade nightly with Gitlab CI/CD](https://github.com/elgentos/masquerade/wiki/How-to-run-Masquerade-nightly-with-Gitlab-CI-CD)
 
 #### Magento 2 out-of-the-box rule-set
 
@@ -237,4 +251,7 @@ gbp buildpackage --git-pbuilder --git-dist=xenial --git-arch=amd64 --git-ignore-
 
 Make sure you have a [cow environment](https://wiki.debian.org/git-pbuilder) configured for your branch and distribution. Keep in mind that the packaging does not build a new phar file, so if you want to package your local revision for testing please run `./build.sh` and copy the created `bin/masquerade` to `dist/masquerade.phar` first.
 
-#### Built by elgentos
+#### Credits
+
+- Built by [elgentos](https://github.com/elgentos)
+- Logo by [Caneco](https://twitter.com.com/caneco)
