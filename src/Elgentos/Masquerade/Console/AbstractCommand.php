@@ -13,8 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class AbstractCommand
  * @package Elgentos\Masquerade\Console
  */
-abstract class AbstractCommand extends Command {
-
+abstract class AbstractCommand extends Command
+{
     protected $config;
     protected $platformName;
     protected $locale;
