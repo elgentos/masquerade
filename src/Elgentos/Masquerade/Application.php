@@ -8,10 +8,33 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends SymfonyApplication
 {
+    public static $logo = <<<LOGO
+._ _  _. _ _.    _ .__. _| _  
+| | |(_|_>(_||_|(/_|(_|(_|(/_ 
+            |
+                   by elgentos
+                   
+LOGO;
+
+    /**
+     * Runs the current application.
+     *
+     * @return int 0 if everything went fine, or an error code
+     *
+     * @throws \Exception When running fails. Bypass this when {@link setCatchExceptions()}.
+     */
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
         $this->registerAutoloader();
         return parent::run($input, $output);
+    }
+
+    /**
+     * @return string
+     */
+    public function getHelp()
+    {
+        return static::$logo . parent::getHelp();
     }
 
     private function registerAutoloader()

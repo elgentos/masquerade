@@ -9,7 +9,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GroupsCommand extends Command
+/**
+ * Class GroupsCommand
+ * @package Elgentos\Masquerade\Console
+ */
+class GroupsCommand extends AbstractCommand
 {
     protected $config;
     protected $input;
@@ -76,22 +80,5 @@ class GroupsCommand extends Command
 
         $outputTable->setRows($rows);
         $outputTable->render();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function setup()
-    {
-        $this->configHelper = new Config();
-        $databaseConfig = $this->configHelper->readConfigFile();
-
-        $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'];
-
-        if (!$this->platformName) {
-            throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
-        }
-
-        $this->config = $this->configHelper->getConfig($this->platformName);
     }
 }

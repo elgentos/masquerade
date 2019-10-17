@@ -12,7 +12,11 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-class IdentifyCommand extends Command
+/**
+ * Class IdentifyCommand
+ * @package Elgentos\Masquerade\Console
+ */
+class IdentifyCommand extends AbstractCommand
 {
     protected $config;
     protected $input;
@@ -53,6 +57,9 @@ class IdentifyCommand extends Command
      */
     protected $prefix;
 
+    /**
+     *
+     */
     protected function configure()
     {
         $this
@@ -68,6 +75,12 @@ class IdentifyCommand extends Command
             ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|void|null
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
@@ -121,61 +134,6 @@ class IdentifyCommand extends Command
         $candidatesTable->setHeaders(['Table', 'Column', 'Suggested formatter', 'Example values']);
         $candidatesTable->setRows($candidates);
         $candidatesTable->render();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function setup()
-    {
-        $this->configHelper = new Config();
-        $databaseConfig = $this->configHelper->readConfigFile();
-
-        $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'];
-
-        if (!$this->platformName) {
-            throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
-        }
-
-        $this->config = $this->configHelper->getConfig($this->platformName);
-
-        $host = $this->input->getOption('host') ?? $databaseConfig['host'] ?? 'localhost';
-        $driver = $this->input->getOption('driver') ?? $databaseConfig['driver'] ?? 'mysql';
-        $database = $this->input->getOption('database') ?? $databaseConfig['database'];
-        $username = $this->input->getOption('username') ?? $databaseConfig['username'];
-        $password = $this->input->getOption('password') ?? $databaseConfig['password'];
-        $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'] ?? '';
-        $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
-
-        $errors = [];
-        if (!$host) {
-            $errors[] = 'No host defined';
-        }
-        if (!$database) {
-            $errors[] = 'No database defined';
-        }
-        if (!$username) {
-            $errors[] = 'No username defined';
-        }
-        if (count($errors) > 0) {
-            throw new \Exception(implode(PHP_EOL, $errors));
-        }
-
-        $capsule = new Capsule;
-        $capsule->addConnection([
-            'driver'    => $driver,
-            'host'      => $host,
-            'database'  => $database,
-            'username'  => $username,
-            'password'  => $password,
-            'prefix'    => $prefix,
-            'charset'   => $charset,
-        ]);
-
-        $this->prefix = $prefix;
-
-        $this->db = $capsule->getConnection();
-        $this->db->statement('SET FOREIGN_KEY_CHECKS=0');
     }
 
     /**

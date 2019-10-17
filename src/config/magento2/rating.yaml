@@ -3,8 +3,8 @@ rating:
     pk: vote_id
     columns:
       remote_ip:
-        formatter: remote_ip
+        formatter: ipv4
       remote_ip_long:
         formatter:
           name: fixed
-          value:
+          value: 0
