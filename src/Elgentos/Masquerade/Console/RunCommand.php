@@ -103,7 +103,7 @@ class RunCommand extends AbstractCommand
 
                 // Make a list of all sub processes that need to be spawned
                 // We abuse the options parameter to set the group name so we can update the correct progress bars in the callback
-                $subProcesses[$groupName] = new Process('bin/masquerade run --parallel=true --group=' . $groupName,null,null,null,null, ['group' => $groupName]);
+                $subProcesses[$groupName] = new Process('bin/masquerade run --parallel=true --group=' . $groupName, null, null, null, null, ['group' => $groupName]);
 
                 // Create progressbar for this group and add it to the progressbars array
                 $section = $this->output->section();
