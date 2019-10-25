@@ -68,7 +68,7 @@ customer:
 Download the phar file:
 
 ```
-wget https://github.com/elgentos/masquerade/releases/latest/download/masquerade.phar
+curl -L -o masquerade.phar https://github.com/elgentos/masquerade/releases/latest/download/masquerade.phar
 ```
 
 ### Usage
