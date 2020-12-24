@@ -5,4 +5,6 @@ rating:
       remote_ip:
         formatter: ipv4
       remote_ip_long:
-        formatter: ipv6
+        formatter: 
+          name: randomNumber
+          nbDigits: 10
