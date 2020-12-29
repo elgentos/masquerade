@@ -32,8 +32,8 @@ use \Symfony\Component\Console\Output\OutputInterface;
  *
  */
 
-abstract class Base {
-
+abstract class Base
+{
     protected $output;
     protected $db;
     protected $table;

@@ -32,7 +32,8 @@ use \Symfony\Component\Console\Output\OutputInterface;
  *
  */
 
-class Simple extends Base {
+class Simple extends Base
+{
 
     /**
      * Do any setup or validation work here, eg. extracting details from the database for later use,
@@ -59,7 +60,7 @@ class Simple extends Base {
             if (!$this->_columnExists($columnName)) {
                 unset($this->table['columns'][$columnName]);
                 $this->output->writeln('Column ' . $columnName . ' in table ' . $this->table['name'] . ' does not exist; skip it.');
-            }    
+            }
         }
 
         if (array_get($this->options, 'delete', false)) {
@@ -94,15 +95,16 @@ class Simple extends Base {
     /**
      * @inheritdoc
      */
-    public function update($primaryKey, array $updates) {
-
+    public function update($primaryKey, array $updates)
+    {
         $this->db->table($this->table['name'])->where($this->table['pk'], $primaryKey)->update($updates);
     }
 
     /**
      * @inheritdoc
      */
-    public function query() : \Illuminate\Database\Query\Builder {
+    public function query() : \Illuminate\Database\Query\Builder
+    {
         $query = $this->db->table($this->table['name'])->orderBy($this->table['pk']);
 
         $where = array_get($this->options, 'where', null);
@@ -113,4 +115,3 @@ class Simple extends Base {
         return $query;
     }
 }
-

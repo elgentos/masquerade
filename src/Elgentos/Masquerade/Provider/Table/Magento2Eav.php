@@ -9,7 +9,8 @@ namespace Elgentos\Masquerade\Provider\Table;
  *
  */
 
-class Magento2Eav extends Simple {
+class Magento2Eav extends Simple
+{
 
     /**
      * @var array of eav_attribute records
@@ -26,24 +27,26 @@ class Magento2Eav extends Simple {
             throw new \Exception("Table {$this->table['name']} is not associated with EAV entities");
         }
         $attributes = $this->db->table('eav_attribute')->where('entity_type_id', $this->entity->entity_type_id)->get();
-        foreach($attributes as $attribute) {
+        foreach ($attributes as $attribute) {
             $this->attributes[$attribute->attribute_code] = $attribute;
         }
         
         parent::setup();
     }
 
-    protected function _columnExists($name) {
+    protected function _columnExists($name)
+    {
         return parent::_columnExists($name) || isset($this->attributes[$name]);
     }
 
     /**
      * @inheritdoc
      */
-    public function update($primaryKey, array $updates) {
+    public function update($primaryKey, array $updates)
+    {
 
         // first update the static properties:
-        $staticUpdates = array_filter($updates, function($value, $key) {
+        $staticUpdates = array_filter($updates, function ($value, $key) {
             return $this->attributes[$key]->backend_type === 'static';
         }, ARRAY_FILTER_USE_BOTH);
 
@@ -55,13 +58,14 @@ class Magento2Eav extends Simple {
     /**
      * @inheritdoc
      */
-    public function query() : \Illuminate\Database\Query\Builder {
+    public function query() : \Illuminate\Database\Query\Builder
+    {
         $query = parent::query();
 
         $selects = ["{$this->table['name']}.*"];
 
         // add any required attributes to the query using joins...
-        foreach($this->columns() as $columnName => $column) {
+        foreach ($this->columns() as $columnName => $column) {
             $attr = $this->attributes[$columnName] ?? null;
             if (!$attr) {
                 continue;
@@ -70,7 +74,7 @@ class Magento2Eav extends Simple {
                 continue;
             }
             $joinTable = $this->table['name'] . '_' . $attr->backend_type; // only for basic EAV, not things like tier_price
-            $query->leftJoin($joinTable, function($join) use($joinTable) {
+            $query->leftJoin($joinTable, function ($join) use ($joinTable) {
                 $join->on("{$this->table['name']}.{$this->table['pk']}", '=', "{$joinTable}.entity_id")
                     ->where("{$joinTable}.attribute_id", '=', $attr->attribute_id);
             });
@@ -82,4 +86,3 @@ class Magento2Eav extends Simple {
         return $query;
     }
 }
-
