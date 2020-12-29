@@ -91,7 +91,7 @@ Options:
       --host[=HOST]          Database host [localhost]
       --prefix[=PREFIX]      Database prefix [empty]
       --locale[=LOCALE]      Locale for Faker data [en_US]
-      --group[=GROUP]        Which groups to run masquerade on [all]
+      --group[=GROUP]        Comma-separated groups to run masquerade on [all]
 ```
 
 You can also set these variables in a `config.yaml` file in the same location as where you run masquerade from, for example:
