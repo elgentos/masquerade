@@ -22,6 +22,8 @@ class RunCommand extends Command
 
     const VERSION = '0.1.9';
 
+    const DEFAULT_QUERY_PROVIDER = \Elgentos\Masquerade\Provider\Table\Simple::class;
+
     protected $config;
 
     /**
@@ -121,39 +123,30 @@ class RunCommand extends Command
      */
     private function fakeData(array $table) : void
     {
-        if (!$this->db->getSchemaBuilder()->hasTable($table['name'])) {
-            $this->output->writeln('Table ' . $table['name'] . ' does not exist.');
-            return;
+        $tableProviderData = array_get($table, 'provider', self::DEFAULT_QUERY_PROVIDER);
+        $tableProviderClass = array_get($table, 'provider.class', null);
+        if (!$tableProviderClass) {
+            $tableProviderClass = $tableProviderData;
+            $tableProviderData = ['class' => $tableProviderClass];
         }
-
-        foreach ($table['columns'] as $columnName => $columnData) {
-            if (!$this->db->getSchemaBuilder()->hasColumn($table['name'], $columnName)) {
-                unset($table['columns'][$columnName]);
-                $this->output->writeln('Column ' . $columnName . ' in table ' . $table['name'] . ' does not exist; skip it.');
-            }
-        }
+        $tableProvider = new $tableProviderClass($this->db, $tableProviderData, $table);
 
         $this->output->writeln('');
         $this->output->writeln('Updating ' . $table['name']);
 
-        $totalRows = $this->db->table($table['name'])->count();
+        $tableProvider->setup();
+
+        $totalRows = $tableProvider->query()->count();
         $progressBar = new ProgressBar($this->output, $totalRows);
         $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRows));
         $progressBar->start();
 
         $primaryKey = array_get($table, 'pk', 'entity_id');
 
-        // Null columns before run to avoid integrity constrains errors
-        foreach ($table['columns'] as $columnName => $columnData) {
-            if (array_get($columnData, 'nullColumnBeforeRun', false)) {
-                $this->db->table($table['name'])->update([$columnName => null]);
-            }
-        }
-
-        $this->db->table($table['name'])->orderBy($primaryKey)->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey) {
+        $tableProvider->query()->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey) {
             foreach ($rows as $row) {
                 $updates = [];
-                foreach ($table['columns'] as $columnName => $columnData) {
+                foreach ($tableProvider->columns() as $columnName => $columnData) {
                     $formatter = array_get($columnData, 'formatter.name');
                     $formatterData = array_get($columnData, 'formatter');
                     $providerClassName = array_get($columnData, 'provider', false);
@@ -188,7 +181,7 @@ class RunCommand extends Command
                         $updates[$columnName] = null;
                     }
                 }
-                $this->db->table($table['name'])->where($primaryKey, $row->{$primaryKey})->update($updates);
+                $tableProvider->update($row->{$primaryKey}, $updates);
                 $progressBar->advance();
             }
         });
