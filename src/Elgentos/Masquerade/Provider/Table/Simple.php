@@ -1,6 +1,6 @@
 <?php
 
-namespace \Elgentos\Masquerade\Provider\Table;
+namespace Elgentos\Masquerade\Provider\Table;
 
 use \Symfony\Component\Console\Output\OutputInterface;
 
@@ -42,24 +42,32 @@ class Simple extends Base {
      */
     public function setup()
     {
+        // check the table exists:
+        if (!$this->db->getSchemaBuilder()->hasTable($this->table['name'])) {
+            throw new \Exception('Table ' . $this->table['name'] . ' does not exist.');
+        }
+
+        if (empty($this->table['pk'])) {
+            throw new \Exception("Table {$this->table['name']} has no primary key - use 'pk:' in the config");
+        }
+
+        if (empty($this->table['columns'])) {
+            $this->table['columns'] = [];
+        }
+
+        foreach ($this->table['columns'] as $columnName => $columnData) {
+            if (!$this->_columnExists($columnName)) {
+                unset($this->table['columns'][$columnName]);
+                $this->output->writeln('Column ' . $columnName . ' in table ' . $this->table['name'] . ' does not exist; skip it.');
+            }    
+        }
+
         if (array_get($this->options, 'delete', false)) {
             if (array_get($this->options, 'where', null)) {
                 $this->query()->delete();
             } else {
                 $this->query()->truncate();
             }
-        }
-
-        // check the table exists:
-        if (!$this->db->getSchemaBuilder()->hasTable($this->table['name'])) {
-            throw new \Exception('Table ' . $this->table['name'] . ' does not exist.');
-        }
-
-        foreach ($this->table['columns'] as $columnName => $columnData) {
-            if (!$this->db->getSchemaBuilder()->hasColumn($this->table['name'], $columnName)) {
-                unset($this->table['columns'][$columnName]);
-                $this->output->writeln('Column ' . $columnName . ' in table ' . $this->table['name'] . ' does not exist; skip it.');
-            }    
         }
 
         // Null columns before run to avoid integrity constrains errors
@@ -78,6 +86,11 @@ class Simple extends Base {
         return $this->table['columns'];
     }
 
+    protected function _columnExists($name)
+    {
+        return $this->db->getSchemaBuilder()->hasColumn($this->table['name'], $name);
+    }
+
     /**
      * @inheritdoc
      */
@@ -90,7 +103,7 @@ class Simple extends Base {
      * @inheritdoc
      */
     public function query() : \Illuminate\Database\Query\Builder {
-        $query = $this->db->table($this->table['name']);
+        $query = $this->db->table($this->table['name'])->orderBy($this->table['pk']);
 
         $where = array_get($this->options, 'where', null);
         if ($where) {

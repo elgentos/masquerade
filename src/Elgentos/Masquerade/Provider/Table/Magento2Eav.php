@@ -1,6 +1,6 @@
 <?php
 
-namespace \Elgentos\Masquerade\Provider\Table;
+namespace Elgentos\Masquerade\Provider\Table;
 
 /**
  * Allows column names to be EAV attributes. No options are required.
@@ -14,25 +14,12 @@ class Magento2Eav extends Simple {
     /**
      * @var array of eav_attribute records
      */
-    protected array $attributes = [];
+    protected $attributes = [];
 
-    protected stdClass $entity;
+    protected $entity;
 
     public function setup()
     {
-        if (array_get($this->options, 'delete', false)) {
-            if (array_get($this->options, 'where', null)) {
-                $this->query()->delete(); // if it's an EAV table, this should cascade
-            } else {
-                $this->query()->truncate();
-            }
-        }
-
-        // check the table exists:
-            if (!$this->db->getSchemaBuilder()->hasTable($table['name'])) {
-            throw new \Exception('Table ' . $table['name'] . ' does not exist.');
-            }
-
         // find all EAV attribues for this table:
         $this->entity = $this->db->table('eav_entity_types')->where('entity_table', $this->table['name'])->first();
         if (!$this->entity) {
@@ -43,6 +30,11 @@ class Magento2Eav extends Simple {
             $this->attributes[$attribute->attribute_code] = $attribute;
         }
         
+        parent::setup();
+    }
+
+    protected function _columnExists($name) {
+        return parent::_columnExists($name) || isset($this->attributes[$name]);
     }
 
     /**
@@ -51,7 +43,7 @@ class Magento2Eav extends Simple {
     public function update($primaryKey, array $updates) {
 
         // first update the static properties:
-        $staticUpdates = array_filter($updates, function($value, $key) use($this) {
+        $staticUpdates = array_filter($updates, function($value, $key) {
             return $this->attributes[$key]->backend_type === 'static';
         }, ARRAY_FILTER_USE_BOTH);
 
@@ -64,14 +56,28 @@ class Magento2Eav extends Simple {
      * @inheritdoc
      */
     public function query() : \Illuminate\Database\Query\Builder {
-        $query = $this->db->table($this->table['name']);
+        $query = parent::query();
 
-        $where = array_get($this->options, 'where', null);
-        if ($where) {
-            $query->whereRaw($where);
-        }
+        $selects = ["{$this->table['name']}.*"];
 
         // add any required attributes to the query using joins...
+        foreach($this->columns() as $columnName => $column) {
+            $attr = $this->attributes[$columnName] ?? null;
+            if (!$attr) {
+                continue;
+            }
+            if ($attr->backend_type === 'static') {
+                continue;
+            }
+            $joinTable = $this->table['name'] . '_' . $attr->backend_type; // only for basic EAV, not things like tier_price
+            $query->leftJoin($joinTable, function($join) use($joinTable) {
+                $join->on("{$this->table['name']}.{$this->table['pk']}", '=', "{$joinTable}.entity_id")
+                    ->where("{$joinTable}.attribute_id", '=', $attr->attribute_id);
+            });
+            $selects[] = "{$joinTable}.value as {$columnName}";
+        }
+
+        $query->select(...$selects);
 
         return $query;
     }

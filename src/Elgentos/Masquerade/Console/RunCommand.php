@@ -129,7 +129,7 @@ class RunCommand extends Command
             $tableProviderClass = $tableProviderData;
             $tableProviderData = ['class' => $tableProviderClass];
         }
-        $tableProvider = new $tableProviderClass($this->db, $tableProviderData, $table);
+        $tableProvider = new $tableProviderClass($this->output, $this->db, $table, $tableProviderData);
 
         $this->output->writeln('');
         $this->output->writeln('Updating ' . $table['name']);
@@ -143,7 +143,7 @@ class RunCommand extends Command
 
         $primaryKey = array_get($table, 'pk', 'entity_id');
 
-        $tableProvider->query()->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey) {
+        $tableProvider->query()->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey, $tableProvider) {
             foreach ($rows as $row) {
                 $updates = [];
                 foreach ($tableProvider->columns() as $columnName => $columnData) {

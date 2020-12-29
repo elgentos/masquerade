@@ -1,6 +1,6 @@
 <?php
 
-namespace \Elgentos\Masquerade\Provider\Table;
+namespace Elgentos\Masquerade\Provider\Table;
 
 use \Symfony\Component\Console\Output\OutputInterface;
 
@@ -34,10 +34,10 @@ use \Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Base {
 
-    protected OutputInterface $output;
-    protected \Illuminate\Database\Connection $db;
-    protected array $table;
-    protected array $options = [];
+    protected $output;
+    protected $db;
+    protected $table;
+    protected $options = [];
 
     public function __construct(OutputInterface $output, \Illuminate\Database\Connection $db, array $tableData, array $providerData = [])
     {
