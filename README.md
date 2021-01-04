@@ -27,9 +27,11 @@ For example, to override the `admin.yaml` for Magento 2, you place a file in `co
 admin:
 ```
 
+You can also truncate, partially delete, or partially anonymize tables - for example, anonymize customer data except for specific records which you use for unit testing, or truncate tables which are just access logs.
+
 For formatters, you can use all default [Faker formatters](https://github.com/fzaninotto/Faker#formatters).
 
-#### Custom Providers / Formatters
+#### Custom Data Providers / Formatters
 
 You can also create your own custom providers with formatters. They need to extend `Faker\Provider\Base` and they need to live in either `~/.masquerade` or `.masquerade` relative from where you run masquerade.
 
@@ -61,6 +63,46 @@ customer:
         provider: \Custom\WoopFormatter
         formatter:
           name: woopwoop
+```
+
+### Custom Table Type Providers
+
+Some systems have linked tables containing related data - eg. Magento's EAV system, Drupal's entity fields and Wordpress's post metadata tables.  You can provide custom table types like this:
+
+An example file `.masquerade/Custom/WoopTable.php`;
+
+```php
+<?php
+
+namespace Custom;
+
+use Elgentos\Masquerade\Provider\Table\Base;
+
+class WoopTable extends Base {
+
+    public function setup() // do any one-off work - eg. delete/truncate, find EAV attributes, create temporary tables
+
+    public function columns() // return a list of the column names that will be faked - these don't have to be real database fields
+
+    public function update($primaryKey, [field=>value, ...]) // update a record - handle the update of any special field types here
+
+    public function query() // return an Illuminate database query object giving all the records you want to affect, and selecting all the columns
+}
+```
+
+And then use it in your YAML file. A provider needs to be set on the table level, and can be a simple class name, or a set of options which are available to your class.  See the documentation in the 'Base' class, and the code for the 'Simple' table type for more details.
+
+```
+customer:
+  customer_entity:
+    provider:
+      class: \Custom\WoopTable
+      option1: "test"
+      option2: false
+    columns:
+      firstname:
+        formatter:
+          name: firstName
 ```
 
 ### Installation

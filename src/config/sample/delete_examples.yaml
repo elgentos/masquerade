@@ -1,0 +1,11 @@
+delete_examples:
+  table_to_fully_truncate:
+    provider:
+      delete: true # without the 'where', this will automatically use 'truncate' rather than 'delete', for speed
+  table_to_partially_delete:
+    provider:
+      delete: true
+      where: " `is_unit_testing_data` = 0 " # deletes the specified records only
+      # no need to provide columns here, because we're deleting rather than anonymizing
+
+
