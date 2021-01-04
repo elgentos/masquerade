@@ -35,7 +35,7 @@ class Magento2Eav extends Simple
             }
         }
 
-	// useful data in $this->attributes[$code]:
+        // useful data in $this->attributes[$code]:
         // ->attribute_id
         // ->backend_type - gives us the table suffix
         // ->is_unique - we use this to apply the 'unique' faker setting
@@ -60,14 +60,14 @@ class Magento2Eav extends Simple
             return $this->_isInBaseTable($code);
         }, ARRAY_FILTER_USE_BOTH);
 
-	// only update static values if there are any:
+        // only update static values if there are any:
         if (count($staticUpdates)) {
             $this->db->table($this->table['name'])->where($this->table['pk'], $primaryKey)->update($staticUpdates);
         }
 
         // now individually update any EAV tables using $attribute->backend_type to determine table name:
-	// NOTE: for attributes with per-store values (eg. products) this will put the same value in for each store ID
-        foreach($updates as $code => $value) {
+        // NOTE: for attributes with per-store values (eg. products) this will put the same value in for each store ID
+        foreach ($updates as $code => $value) {
             if ($this->_isInBaseTable($code)) {
                 continue;
             }
@@ -76,11 +76,11 @@ class Magento2Eav extends Simple
             // we're assuming the entity ID field is 'entity_id' - could be overridden in eav_entity_type->entity_id_field but unlikely
             // update anything for this entity ID
             $this->db->table($table)
-		->where('entity_id', '=', $primaryKey)
-		->where('attribute_id', '=', $this->attributes[$code]->attribute_id)
-		->update([
-		    'value' => $value
-		]);
+                ->where('entity_id', '=', $primaryKey)
+                ->where('attribute_id', '=', $this->attributes[$code]->attribute_id)
+                ->update([
+                    'value' => $value
+                ]);
         }
     }
 
@@ -100,13 +100,10 @@ class Magento2Eav extends Simple
 
         // add any required attributes to the query using joins...
         foreach ($this->columns() as $columnName => $column) {
-            $attr = $this->attributes[$columnName] ?? null;
-            if (!$attr) {
+            if ($this->_isInBaseTable($columnName)) {
                 continue;
             }
-            if ($attr->backend_type === 'static') {
-                continue;
-            }
+            $attr = $this->attributes[$columnName];
             $joinTable = $this->table['name'] . '_' . $attr->backend_type; // only for basic EAV, not things like tier_price
             $query->leftJoin($joinTable, function ($join) use ($joinTable, $attr) {
                 $join->on("{$this->table['name']}.{$this->table['pk']}", '=', "{$joinTable}.entity_id")
