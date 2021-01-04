@@ -123,16 +123,15 @@ class RunCommand extends Command
      */
     private function fakeData(array $table) : void
     {
-        $tableProviderData = array_get($table, 'provider', self::DEFAULT_QUERY_PROVIDER);
-        $tableProviderClass = array_get($table, 'provider.class', null);
-        if (!$tableProviderClass) {
-            $tableProviderClass = $tableProviderData;
-            $tableProviderData = ['class' => $tableProviderClass];
+        $tableProviderData = array_get($table, 'provider', []);
+        if (is_string($tableProviderData)) {
+            $tableProviderData = ['class' => $tableProviderData]; // just a class rather than array of options
         }
+        $tableProviderClass = array_get($tableProviderData, 'class', self::DEFAULT_QUERY_PROVIDER);
         $tableProvider = new $tableProviderClass($this->output, $this->db, $table, $tableProviderData);
 
         $this->output->writeln('');
-        $this->output->writeln('Updating ' . $table['name']);
+        $this->output->writeln('Updating ' . $table['name'] . ' using '. $tableProviderClass);
 
         $tableProvider->setup();
 
