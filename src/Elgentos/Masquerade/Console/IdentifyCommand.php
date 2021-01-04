@@ -58,6 +58,7 @@ class IdentifyCommand extends Command
         $this
             ->setName($this->name)
             ->setDescription($this->description)
+            ->addOption('config', null, InputOption::VALUE_OPTIONAL, 'Extra config directory for config.yaml or platform configs')
             ->addOption('platform', null, InputOption::VALUE_OPTIONAL)
             ->addOption('driver', null, InputOption::VALUE_OPTIONAL, 'Database driver [mysql]')
             ->addOption('database', null, InputOption::VALUE_OPTIONAL)
@@ -128,7 +129,7 @@ class IdentifyCommand extends Command
      */
     private function setup()
     {
-        $this->configHelper = new Config();
+        $this->configHelper = new Config(['path' => $this->input->getOption('config')]);
         $databaseConfig = $this->configHelper->readConfigFile();
 
         $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'];

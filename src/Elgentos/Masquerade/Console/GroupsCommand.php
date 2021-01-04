@@ -40,6 +40,7 @@ class GroupsCommand extends Command
         $this
             ->setName($this->name)
             ->setDescription($this->description)
+            ->addOption('config', null, InputOption::VALUE_OPTIONAL, 'Extra config directory for config.yaml or platform configs')
             ->addOption('platform', null, InputOption::VALUE_REQUIRED);
     }
 
@@ -83,7 +84,7 @@ class GroupsCommand extends Command
      */
     private function setup()
     {
-        $this->configHelper = new Config();
+        $this->configHelper = new Config(['path' => $this->input->getOption('config')]);
         $databaseConfig = $this->configHelper->readConfigFile();
 
         $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'];

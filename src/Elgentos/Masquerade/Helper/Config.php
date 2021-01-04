@@ -17,6 +17,13 @@ class Config
         'config',
     ];
 
+    public function __construct($options = [])
+    {
+        if ($options['path']) {
+            $this->configDirs[] = $options['path'];
+        }
+    }
+
     /**
      * @param string $rootDir
      * @param string $file
