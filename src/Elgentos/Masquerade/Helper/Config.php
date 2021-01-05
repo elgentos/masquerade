@@ -19,8 +19,10 @@ class Config
 
     public function __construct($options = [])
     {
-        if ($options['path']) {
-            $this->configDirs[] = $options['path'];
+        if ($options['config'] ?? null) {
+            foreach ($options['config'] as $dir) {
+                $this->configDirs[] = $dir;
+            }
         }
     }
 
