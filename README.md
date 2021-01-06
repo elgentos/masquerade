@@ -84,6 +84,8 @@ class WoopTable extends Base {
 
     public function columns() // return a list of the column names that will be faked - these don't have to be real database fields
 
+    public function getPrimaryKey() // if you inherit \Elgentos\Masquerade\Provider\Table\Simple, this will be guessed
+
     public function update($primaryKey, [field=>value, ...]) // update a record - handle the update of any special field types here
 
     public function query() // return an Illuminate database query object giving all the records you want to affect, and selecting all the columns

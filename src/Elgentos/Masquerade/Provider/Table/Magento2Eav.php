@@ -19,6 +19,8 @@ class Magento2Eav extends Simple
 
     protected $entity;
 
+    protected $groupBy;
+
     public function setup()
     {
         // find all EAV attribues for this table:
@@ -42,6 +44,9 @@ class Magento2Eav extends Simple
         // ->is_required - we don't use this, because if it's a required value then it'll already exist in the DB
         
         parent::setup();
+
+        $this->orderBy = "{$this->table['name']}.{$this->primaryKey}"; // add table name because of joins in the query
+        $this->groupBy = $this->orderBy;
     }
 
     protected function _columnExists($name)
@@ -62,7 +67,7 @@ class Magento2Eav extends Simple
 
         // only update static values if there are any:
         if (count($staticUpdates)) {
-            $this->db->table($this->table['name'])->where($this->table['pk'], $primaryKey)->update($staticUpdates);
+            $this->db->table($this->table['name'])->where($this->primaryKey, $primaryKey)->update($staticUpdates);
         }
 
         // now individually update any EAV tables using $attribute->backend_type to determine table name:
@@ -99,17 +104,23 @@ class Magento2Eav extends Simple
         $selects = ["{$this->table['name']}.*"];
 
         // add any required attributes to the query using joins...
+        $joinCount = 0;
         foreach ($this->columns() as $columnName => $column) {
             if ($this->_isInBaseTable($columnName)) {
                 continue;
             }
             $attr = $this->attributes[$columnName];
             $joinTable = $this->table['name'] . '_' . $attr->backend_type; // only for basic EAV, not things like tier_price
-            $query->leftJoin($joinTable, function ($join) use ($joinTable, $attr) {
-                $join->on("{$this->table['name']}.{$this->table['pk']}", '=', "{$joinTable}.entity_id")
-                    ->where("{$joinTable}.attribute_id", '=', $attr->attribute_id);
+            $joinCount++;
+            $joinAlias = "j{$joinCount}";
+            $query->leftJoin("{$joinTable} as {$joinAlias}", function ($join) use ($joinAlias, $attr) {
+                $join->on("{$this->table['name']}.{$this->primaryKey}", '=', "{$joinAlias}.entity_id")
+                    ->where("{$joinAlias}.attribute_id", '=', $attr->attribute_id);
             });
-            $selects[] = "{$joinTable}.value as {$columnName}";
+            $selects[] = "{$joinAlias}.value as {$columnName}";
+        }
+        if (count($selects) > 1) { // we have EAV fields
+            $query->groupBy("{$this->table['name']}.{$this->primaryKey}"); // in case of per-store values - we'll use the same data for all stores
         }
 
         $query->select(...$selects);

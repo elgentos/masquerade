@@ -140,7 +140,7 @@ class RunCommand extends Command
         $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRows));
         $progressBar->start();
 
-        $primaryKey = array_get($table, 'pk', 'entity_id');
+        $primaryKey = $tableProvider->getPrimaryKey();
 
         $tableProvider->query()->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey, $tableProvider) {
             foreach ($rows as $row) {

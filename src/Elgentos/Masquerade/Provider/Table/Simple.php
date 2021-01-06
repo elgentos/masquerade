@@ -34,6 +34,10 @@ use \Symfony\Component\Console\Output\OutputInterface;
 
 class Simple extends Base
 {
+    const PRIMARY_KEYS = ['entity_id', 'id', 'ID'];
+
+    protected $primaryKey = null;
+    protected $orderBy = null;
 
     /**
      * Do any setup or validation work here, eg. extracting details from the database for later use,
@@ -48,10 +52,6 @@ class Simple extends Base
             throw new \Exception('Table ' . $this->table['name'] . ' does not exist.');
         }
 
-        if (empty($this->table['pk'])) {
-            throw new \Exception("Table {$this->table['name']} has no primary key - use 'pk:' in the config");
-        }
-
         if (empty($this->table['columns'])) {
             $this->table['columns'] = [];
         }
@@ -63,7 +63,11 @@ class Simple extends Base
             }
         }
 
+        $this->getPrimaryKey(); // verify it exists
+        $this->orderBy = $this->primaryKey; // default, could be overridden by a subclass
+
         if (array_get($this->options, 'delete', false)) {
+            $this->output->writeln(' - removing the selected records');
             if (array_get($this->options, 'where', null)) {
                 $this->query()->delete();
             } else {
@@ -77,6 +81,41 @@ class Simple extends Base
                 $this->query()->update([$columnName => null]);
             }
         }
+
+        // warn if 'where' includes a nulled column:
+        $where = array_get($this->options, 'where', null);
+        if ($where) {
+            $this->output->writeln(" - where {$where}");
+            foreach ($this->table['columns'] as $columnName => $columnData) {
+                if (array_get($columnData, 'nullColumnBeforeRun', false)) {
+                    if (strstr($where, $columnName) !== false) {
+                        $this->output->writeln("WARNING - your 'where' mentions a field which is set to nullColumnBeforeRun - ensure your 'where' includes ' or `{$columnName}` is null'");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPrimaryKey()
+    {
+        if (!$this->primaryKey) {
+            $this->primaryKey = $this->table['pk'] ?? null;
+            if (!$this->primaryKey) {
+                foreach (self::PRIMARY_KEYS as $possibleKey) {
+                    if ($this->_columnExists($possibleKey)) {
+                        $this->primaryKey = $possibleKey;
+                    }
+                }
+            }
+            if (!$this->primaryKey || !$this->_columnExists($this->primaryKey)) {
+                throw new \Exception("Table {$this->table['name']} primary key could not be determined - use 'pk:' in the config");
+            }
+            $this->output->writeln(" - using primary key '{$this->primaryKey}'");
+        }
+        return $this->primaryKey;
     }
 
     /**
@@ -97,7 +136,7 @@ class Simple extends Base
      */
     public function update($primaryKey, array $updates)
     {
-        $this->db->table($this->table['name'])->where($this->table['pk'], $primaryKey)->update($updates);
+        $this->db->table($this->table['name'])->where($this->primaryKey, $primaryKey)->update($updates);
     }
 
     /**
@@ -105,7 +144,7 @@ class Simple extends Base
      */
     public function query() : \Illuminate\Database\Query\Builder
     {
-        $query = $this->db->table($this->table['name'])->orderBy($this->table['pk']);
+        $query = $this->db->table($this->table['name'])->orderBy($this->orderBy);
 
         $where = array_get($this->options, 'where', null);
         if ($where) {

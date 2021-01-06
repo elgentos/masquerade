@@ -58,6 +58,12 @@ abstract class Base
     }
 
     /**
+     * Return the name of the primary key column in the query returned by ->query()
+     * @return string
+     */
+    abstract public function getPrimaryKey();
+
+    /**
      * Return the columns with their config
      * @return array
      */
