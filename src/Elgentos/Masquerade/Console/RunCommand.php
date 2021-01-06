@@ -135,7 +135,7 @@ class RunCommand extends Command
 
         $tableProvider->setup();
 
-        $totalRows = $tableProvider->query()->count();
+        $totalRows = $tableProvider->count();
         $progressBar = new ProgressBar($this->output, $totalRows);
         $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRows));
         $progressBar->start();

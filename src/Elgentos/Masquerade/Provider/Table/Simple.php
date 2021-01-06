@@ -126,6 +126,14 @@ class Simple extends Base
         return $this->table['columns'];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function count()
+    {
+        return $this->query()->count(); // works unless you're using groupBy in the query
+    }
+
     protected function _columnExists($name)
     {
         return $this->db->getSchemaBuilder()->hasColumn($this->table['name'], $name);

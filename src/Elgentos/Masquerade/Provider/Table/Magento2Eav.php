@@ -19,8 +19,6 @@ class Magento2Eav extends Simple
 
     protected $entity;
 
-    protected $groupBy;
-
     public function setup()
     {
         // find all EAV attribues for this table:
@@ -30,10 +28,12 @@ class Magento2Eav extends Simple
         }
         $attributes = $this->db->table('eav_attribute')->where('entity_type_id', $this->entity->entity_type_id)->get();
         foreach ($attributes as $attribute) {
-            $this->attributes[$attribute->attribute_code] = $attribute;
-            if ($attribute->is_unique && isset($this->table['columns']) && isset($this->table['columns'][$attribute->attribute_code])) {
-                $this->output->writeln(' - forcing ' . $attribute->attribute_code . ' to be unique');
-                $this->table['columns'][$attribute->attribute_code]['unique'] = true;
+            if (isset($this->table['columns']) && isset($this->table['columns'][$attribute->attribute_code])) {
+                $this->attributes[$attribute->attribute_code] = $attribute; // only add if needed
+                if ($attribute->is_unique) {
+                    $this->output->writeln(' - forcing ' . $attribute->attribute_code . ' to be unique');
+                    $this->table['columns'][$attribute->attribute_code]['unique'] = true;
+                }
             }
         }
 
@@ -46,12 +46,21 @@ class Magento2Eav extends Simple
         parent::setup();
 
         $this->orderBy = "{$this->table['name']}.{$this->primaryKey}"; // add table name because of joins in the query
-        $this->groupBy = $this->orderBy;
     }
 
     protected function _columnExists($name)
     {
         return parent::_columnExists($name) || isset($this->attributes[$name]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function count()
+    {
+        // https://github.com/laravel/framework/pull/32624 - if we upgrade to illuminate ^7.x, replace with getCountForPagination()
+        $query = $this->query();
+        return $query->newQuery()->fromSub($query, 'table1')->count();
     }
 
     /**
@@ -119,11 +128,11 @@ class Magento2Eav extends Simple
             });
             $selects[] = "{$joinAlias}.value as {$columnName}";
         }
-        if (count($selects) > 1) { // we have EAV fields
-            $query->groupBy("{$this->table['name']}.{$this->primaryKey}"); // in case of per-store values - we'll use the same data for all stores
-        }
-
         $query->select(...$selects);
+
+        if (count($this->attributes)) { // we have EAV fields
+            $query->groupBy($this->orderBy); // in case of per-store values - we'll use the same data for all stores
+        }
 
         return $query;
     }

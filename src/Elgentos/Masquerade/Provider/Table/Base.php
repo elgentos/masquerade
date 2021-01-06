@@ -73,6 +73,11 @@ abstract class Base
     }
 
     /**
+     * @return int The number of rows which will be affected
+     */
+    abstract public function count();
+
+    /**
      * Update a set of columns for a specific primary key
      * @param string|int Primary Key
      * @param array in the form [column_name => value, ...]
