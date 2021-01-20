@@ -17,6 +17,15 @@ class Config
         'config',
     ];
 
+    public function __construct($options = [])
+    {
+        if ($options['config'] ?? null) {
+            foreach ($options['config'] as $dir) {
+                $this->configDirs[] = $dir;
+            }
+        }
+    }
+
     /**
      * @param string $rootDir
      * @param string $file

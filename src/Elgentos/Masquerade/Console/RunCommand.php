@@ -14,9 +14,9 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 class RunCommand extends Command
 {
-    const LOGO = '                              
-._ _  _. _ _.    _ .__. _| _  
-| | |(_|_>(_||_|(/_|(_|(_|(/_ 
+    const LOGO = '
+._ _  _. _ _.    _ .__. _| _
+| | |(_|_>(_||_|(/_|(_|(_|(/_
             |
                    by elgentos';
 
@@ -76,11 +76,13 @@ class RunCommand extends Command
         $this
             ->setName($this->name)
             ->setDescription($this->description)
+            ->addOption('config', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'One or more extra config directories for config.yaml or platform configs')
             ->addOption('platform', null, InputOption::VALUE_OPTIONAL)
             ->addOption('driver', null, InputOption::VALUE_OPTIONAL, 'Database driver [mysql]')
             ->addOption('database', null, InputOption::VALUE_OPTIONAL)
             ->addOption('username', null, InputOption::VALUE_OPTIONAL)
             ->addOption('password', null, InputOption::VALUE_OPTIONAL)
+            ->addOption('port', null, InputOption::VALUE_OPTIONAL, 'Database port [3306]')
             ->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Database host [localhost]')
             ->addOption('prefix', null, InputOption::VALUE_OPTIONAL, 'Database prefix [empty]')
             ->addOption('locale', null, InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
@@ -203,7 +205,7 @@ class RunCommand extends Command
      */
     private function setup()
     {
-        $this->configHelper = new Config();
+        $this->configHelper = new Config($this->input->getOptions());
 
         $databaseConfig = $this->configHelper->readConfigFile();
 
@@ -222,6 +224,7 @@ class RunCommand extends Command
         $password = $this->input->getOption('password') ?? $databaseConfig['password'] ?? null;
         $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'] ?? '';
         $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
+        $port = $this->input->getOption('port') ?? $databaseConfig['port'] ?? 3306;
 
         $errors = [];
         if (!$host) {
@@ -246,6 +249,7 @@ class RunCommand extends Command
             'password'  => $password,
             'prefix'    => $prefix,
             'charset'   => $charset,
+            'port'      => $port
         ]);
 
         $this->db = $capsule->getConnection();
