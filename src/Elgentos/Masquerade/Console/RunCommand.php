@@ -82,7 +82,7 @@ class RunCommand extends Command
             ->addOption('database', null, InputOption::VALUE_OPTIONAL)
             ->addOption('username', null, InputOption::VALUE_OPTIONAL)
             ->addOption('password', null, InputOption::VALUE_OPTIONAL)
-            ->addOption('port', null, InputOption::VALUE_OPTIONAL, 'Database port [3307]')
+            ->addOption('port', null, InputOption::VALUE_OPTIONAL, 'Database port [3306]')
             ->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Database host [localhost]')
             ->addOption('prefix', null, InputOption::VALUE_OPTIONAL, 'Database prefix [empty]')
             ->addOption('locale', null, InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
@@ -224,7 +224,7 @@ class RunCommand extends Command
         $password = $this->input->getOption('password') ?? $databaseConfig['password'] ?? null;
         $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'] ?? '';
         $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
-        $port = $this->input->getOption('port') ?? $databaseConfig['port'] ?? 3307;
+        $port = $this->input->getOption('port') ?? $databaseConfig['port'] ?? 3306;
 
         $errors = [];
         if (!$host) {
