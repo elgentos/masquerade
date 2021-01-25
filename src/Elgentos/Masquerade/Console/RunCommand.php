@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Faker\Factory as FakerFactory;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Support\Arr;
 
 class RunCommand extends Command
 {
