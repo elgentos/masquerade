@@ -28,7 +28,7 @@ use \Symfony\Component\Console\Output\OutputInterface;
  *
  * where: a string containing a custom 'where' clause - for example, you could exclude data required for unit tests
  * delete: boolean - if true, don't anonymise this table, just delete the records specified
- *     (if no 'where' clause is present, it will try and use the 'truncate' method for speed)
+ * truncate: boolean - if true, ignore 'where' and 'delete' and just truncate the table - ignores any foreign key constraints
  *
  */
 
@@ -66,13 +66,12 @@ class Simple extends Base
         $this->getPrimaryKey(); // verify it exists
         $this->orderBy = $this->primaryKey; // default, could be overridden by a subclass
 
-        if (array_get($this->options, 'delete', false)) {
+        if (array_get($this->options, 'truncate', false)) {
+            $this->output->writeln(' - removing all records, ignoring foreign keys');
+            $this->query()->truncate();
+        } elseif (array_get($this->options, 'delete', false)) {
             $this->output->writeln(' - removing the selected records');
-            if (array_get($this->options, 'where', null)) {
-                $this->query()->delete();
-            } else {
-                $this->query()->truncate();
-            }
+            $this->query()->delete();
         }
 
         // Null columns before run to avoid integrity constrains errors
