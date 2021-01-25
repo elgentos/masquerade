@@ -1,0 +1,18 @@
+admin:
+  admin_user:
+    pk: user_id
+    columns:
+      firstname:
+        formatter: firstName
+      lastname:
+        formatter: lastName
+      email:
+        formatter: email
+        nullColumnBeforeRun: true
+        unique: true
+      username:
+        formatter: firstName
+        nullColumnBeforeRun: true
+        unique: true
+      password:
+        formatter: password
