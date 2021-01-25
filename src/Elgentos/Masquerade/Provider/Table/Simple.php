@@ -66,7 +66,7 @@ class Simple extends Base
         $this->orderBy = $this->primaryKey; // default, could be overridden by a subclass
 
         if (Arr::get($this->options, 'delete', false)) {
-            if($this->input->getOption('with-integrity') || Arr::get($this->options, 'where', null)) {
+            if ($this->input->getOption('with-integrity') || Arr::get($this->options, 'where', null)) {
                 $this->output->writeln(' - removing the selected records');
                 $this->query()->delete();
             } else {

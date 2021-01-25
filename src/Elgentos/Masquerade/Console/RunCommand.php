@@ -246,7 +246,7 @@ class RunCommand extends Command
         ]);
 
         $this->db = $capsule->getConnection();
-        if(!$this->input->getOption('with-integrity')) {
+        if (!$this->input->getOption('with-integrity')) {
             $this->output->writeln('[Foreign key constraint checking is off - deletions will not affect linked tables]');
             $this->db->statement('SET FOREIGN_KEY_CHECKS=0');
         }
