@@ -27,7 +27,59 @@ For example, to override the `admin.yaml` for Magento 2, you place a file in `co
 admin:
 ```
 
-You can also truncate, partially delete, or partially anonymize tables - for example, anonymize customer data except for specific records which you use for unit testing, or truncate tables which are just access logs.
+### Partial anonymisation
+
+You can affect only certain records by including a 'where' clause - for example to avoid anonymising certain admin accounts, or to preserve data used in unit tests, like this:
+
+```yaml
+customers:
+  customer_entity:
+    provider: # this sets options specific to the type of table
+      where: "`email` not like '%@mycompany.com'" # leave mycompany.com emails alone
+```
+
+### Delete Data
+
+You might want to fully or partially delete data - eg. if your developers don't need sales orders, or you want to keep the database size a lot smaller than the production database.  Specify the 'delete' option.
+
+When deleting some Magento data, eg. sales orders, add the command line option `--with-integrity` which enforces foreign key checks, so for example sales\_invoice records will be deleted automatically if their parent sales\_order is deleted:
+
+```yaml
+orders:
+  sales_order:
+    provider:
+      delete: true
+      where: "customer_id != 3" # delete all except customer 3's orders because we use that for testing
+    # no need to specify columns if you're using 'delete'      
+```
+
+If you use 'delete' without a 'where', and without '--with-integrity', it will use 'truncate' to delete the entire table.  It will not use truncate if --with-integrity is specified since that bypasses key checks.
+
+### Magento EAV Attributes
+
+You can use the Magento2Eav table type to treat EAV attributes just like normal columns, eg.
+
+```yaml
+products:
+  catalog_product_entity: # specify the base table of the entity
+    provider:
+      name: \Elgentos\Masquerade\Provider\Table\Magento2Eav
+      where: "sku != 'TESTPRODUCT'" # you can still use 'where' and 'delete'
+    columns:
+      my_custom_attribute:
+        formatter: sentence
+      my_other_attribute:
+        formatter: email
+
+  catalog_category_entity:
+    provider: \Elgentos\Masquerade\Provider\Table\Magento2Eav # shortcut if not using 'where' or 'delete'
+    columns:
+      description: # refer to EAV attributes like normal columns
+        formatter: paragraph
+
+```
+
+### Formatter Options
 
 For formatters, you can use all default [Faker formatters](https://github.com/fzaninotto/Faker#formatters).
 
@@ -94,7 +146,7 @@ class WoopTable extends Base {
 
 And then use it in your YAML file. A provider needs to be set on the table level, and can be a simple class name, or a set of options which are available to your class.  See the documentation in the 'Base' class, and the code for the 'Simple' table type for more details.
 
-```
+```yaml
 customer:
   customer_entity:
     provider:
@@ -137,6 +189,7 @@ Options:
       --prefix[=PREFIX]      Database prefix [empty]
       --locale[=LOCALE]      Locale for Faker data [en_US]
       --group[=GROUP]        Comma-separated groups to run masquerade on [all]
+      --with-integrity       Run with foreign key checks enabled
 ```
 
 You can also set these variables in a `config.yaml` file in the same location as where you run masquerade from, for example:

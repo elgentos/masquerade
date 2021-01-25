@@ -2,7 +2,8 @@
 
 namespace Elgentos\Masquerade\Provider\Table;
 
-use \Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * All table providers must inherit this
@@ -35,13 +36,15 @@ use \Symfony\Component\Console\Output\OutputInterface;
 abstract class Base
 {
     protected $output;
+    protected $input;
     protected $db;
     protected $table;
     protected $options = [];
 
-    public function __construct(OutputInterface $output, \Illuminate\Database\Connection $db, array $tableData, array $providerData = [])
+    public function __construct(InputInterface $input, OutputInterface $output, \Illuminate\Database\Connection $db, array $tableData, array $providerData = [])
     {
         $this->output = $output;
+        $this->input = $input;
         $this->db = $db;
         $this->table = $tableData;
         $this->options = $providerData;

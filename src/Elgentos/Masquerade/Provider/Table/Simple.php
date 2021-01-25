@@ -2,7 +2,7 @@
 
 namespace Elgentos\Masquerade\Provider\Table;
 
-use \Symfony\Component\Console\Output\OutputInterface;
+use Illuminate\Support\Arr;
 
 /**
  * The default provider - for plain, regular database tables
@@ -28,7 +28,6 @@ use \Symfony\Component\Console\Output\OutputInterface;
  *
  * where: a string containing a custom 'where' clause - for example, you could exclude data required for unit tests
  * delete: boolean - if true, don't anonymise this table, just delete the records specified
- * truncate: boolean - if true, ignore 'where' and 'delete' and just truncate the table - ignores any foreign key constraints
  *
  */
 
@@ -66,27 +65,29 @@ class Simple extends Base
         $this->getPrimaryKey(); // verify it exists
         $this->orderBy = $this->primaryKey; // default, could be overridden by a subclass
 
-        if (array_get($this->options, 'truncate', false)) {
-            $this->output->writeln(' - removing all records, ignoring foreign keys');
-            $this->query()->truncate();
-        } elseif (array_get($this->options, 'delete', false)) {
-            $this->output->writeln(' - removing the selected records');
-            $this->query()->delete();
+        if (Arr::get($this->options, 'delete', false)) {
+            if($this->input->getOption('with-integrity') || Arr::get($this->options, 'where', null)) {
+                $this->output->writeln(' - removing the selected records');
+                $this->query()->delete();
+            } else {
+                $this->output->writeln(' - removing all records, ignoring foreign keys');
+                $this->query()->truncate();
+            }
         }
 
         // Null columns before run to avoid integrity constrains errors
         foreach ($this->table['columns'] as $columnName => $columnData) {
-            if (array_get($columnData, 'nullColumnBeforeRun', false)) {
+            if (Arr::get($columnData, 'nullColumnBeforeRun', false)) {
                 $this->query()->update([$columnName => null]);
             }
         }
 
         // warn if 'where' includes a nulled column:
-        $where = array_get($this->options, 'where', null);
+        $where = Arr::get($this->options, 'where', null);
         if ($where) {
             $this->output->writeln(" - where {$where}");
             foreach ($this->table['columns'] as $columnName => $columnData) {
-                if (array_get($columnData, 'nullColumnBeforeRun', false)) {
+                if (Arr::get($columnData, 'nullColumnBeforeRun', false)) {
                     if (strstr($where, $columnName) !== false) {
                         $this->output->writeln("WARNING - your 'where' mentions a field which is set to nullColumnBeforeRun - ensure your 'where' includes ' or `{$columnName}` is null'");
                     }
@@ -153,7 +154,7 @@ class Simple extends Base
     {
         $query = $this->db->table($this->table['name'])->orderBy($this->orderBy);
 
-        $where = array_get($this->options, 'where', null);
+        $where = Arr::get($this->options, 'where', null);
         if ($where) {
             $query->whereRaw($where);
         }

@@ -89,7 +89,8 @@ class RunCommand extends Command
             ->addOption('prefix', null, InputOption::VALUE_OPTIONAL, 'Database prefix [empty]')
             ->addOption('locale', null, InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
             ->addOption('group', null, InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]')
-            ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]');
+            ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]')
+            ->addOption('with-integrity', null, InputOption::VALUE_NONE, 'Run with foreign key checks enabled');
     }
 
     /**
@@ -125,12 +126,12 @@ class RunCommand extends Command
      */
     private function fakeData(array $table) : void
     {
-        $tableProviderData = array_get($table, 'provider', []);
+        $tableProviderData = Arr::get($table, 'provider', []);
         if (is_string($tableProviderData)) {
             $tableProviderData = ['class' => $tableProviderData]; // just a class rather than array of options
         }
-        $tableProviderClass = array_get($tableProviderData, 'class', self::DEFAULT_QUERY_PROVIDER);
-        $tableProvider = new $tableProviderClass($this->output, $this->db, $table, $tableProviderData);
+        $tableProviderClass = Arr::get($tableProviderData, 'class', self::DEFAULT_QUERY_PROVIDER);
+        $tableProvider = new $tableProviderClass($this->input, $this->output, $this->db, $table, $tableProviderData);
 
         $this->output->writeln('');
         $this->output->writeln('Updating ' . $table['name'] . ' using '. $tableProviderClass);
@@ -245,7 +246,10 @@ class RunCommand extends Command
         ]);
 
         $this->db = $capsule->getConnection();
-        $this->db->statement('SET FOREIGN_KEY_CHECKS=0');
+        if(!$this->input->getOption('with-integrity')) {
+            $this->output->writeln('[Foreign key constraint checking is off - deletions will not affect linked tables]');
+            $this->db->statement('SET FOREIGN_KEY_CHECKS=0');
+        }
 
         $this->locale = $this->input->getOption('locale') ?? $databaseConfig['locale'] ?? 'en_US';
 
