@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Faker\Factory as FakerFactory;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Support\Arr;
 
 class RunCommand extends Command
 {
@@ -143,11 +144,11 @@ class RunCommand extends Command
         $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRows));
         $progressBar->start();
 
-        $primaryKey = array_get($table, 'pk', 'entity_id');
+        $primaryKey = Arr::get($table, 'pk', 'entity_id');
 
         // Null columns before run to avoid integrity constrains errors
         foreach ($table['columns'] as $columnName => $columnData) {
-            if (array_get($columnData, 'nullColumnBeforeRun', false)) {
+            if (Arr::get($columnData, 'nullColumnBeforeRun', false)) {
                 $this->db->table($table['name'])->update([$columnName => null]);
             }
         }
@@ -156,9 +157,9 @@ class RunCommand extends Command
             foreach ($rows as $row) {
                 $updates = [];
                 foreach ($table['columns'] as $columnName => $columnData) {
-                    $formatter = array_get($columnData, 'formatter.name');
-                    $formatterData = array_get($columnData, 'formatter');
-                    $providerClassName = array_get($columnData, 'provider', false);
+                    $formatter = Arr::get($columnData, 'formatter.name');
+                    $formatterData = Arr::get($columnData, 'formatter');
+                    $providerClassName = Arr::get($columnData, 'provider', false);
 
                     if (!$formatter) {
                         $formatter = $formatterData;
@@ -172,15 +173,15 @@ class RunCommand extends Command
                     }
 
                     if ($formatter == 'fixed') {
-                        $updates[$columnName] = array_first($options);
+                        $updates[$columnName] = Arr::first($options);
                         continue;
                     }
 
                     try {
                         $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
-                        if (array_get($columnData, 'unique', false)) {
+                        if (Arr::get($columnData, 'unique', false)) {
                             $updates[$columnName] = $fakerInstance->unique()->{$formatter}(...$options);
-                        } elseif (array_get($columnData, 'optional', false)) {
+                        } elseif (Arr::get($columnData, 'optional', false)) {
                             $updates[$columnName] = $fakerInstance->optional()->{$formatter}(...$options);
                         } else {
                             $updates[$columnName] = $fakerInstance->{$formatter}(...$options);
