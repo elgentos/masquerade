@@ -1,0 +1,11 @@
+partial_anonymize:
+  table_with_test_users:
+    provider: # the 'class' below isn't needed because 'Simple' is the default
+      class: \Elgentos\Masquerade\Provider\Table\Simple
+      where: " email not like '%@example.com' " # leave the example.com users alone, they're for our unit tests
+    columns:
+      email:
+        formatter: email
+      name:
+        formatter: name
+

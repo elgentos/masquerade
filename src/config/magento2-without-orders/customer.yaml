@@ -1,0 +1,82 @@
+customer:
+  customer_entity:
+    columns:
+      email:
+        formatter: email
+        unique: true
+        nullColumnBeforeRun: true
+      prefix:
+        formatter:
+          name: fixed
+          value:
+      firstname:
+        formatter:
+          name: firstName
+      middlename:
+        formatter:
+          name: fixed
+          value:
+      lastname:
+        formatter: lastName
+      suffix:
+        formatter:
+          name: fixed
+          value:
+
+  customer_address_entity:
+    columns:
+      firstname:
+        formatter: firstName
+      lastname:
+        formatter: lastName
+      company:
+        formatter: company
+        optional: true
+      street:
+        formatter: streetAddress
+      city:
+        formatter: city
+      postcode:
+        formatter: postcode
+      telephone:
+        formatter: phoneNumber
+      fax:
+        formatter: phoneNumber
+        optional: true
+
+  customer_grid_flat:
+    columns:
+      name:
+        formatter: name
+      email:
+        formatter: email
+        unique: true
+        nullColumnBeforeRun: true
+      dob:
+        formatter: dateTimeThisCentury
+        optional: true
+      billing_full:
+        formatter: address
+      shipping_full:
+        formatter: address
+      billing_firstname:
+        formatter: firstName
+      billing_lastname:
+        formatter: lastName
+      billing_telephone:
+        formatter: phoneNumber
+      billing_postcode:
+        formatter: postcode
+      billing_street:
+        formatter: streetAddress
+      billing_city:
+        formatter: city
+      billing_fax:
+        formatter: phoneNumber
+        optional: true
+      billing_vat_id:
+        formatter: vat
+        optional: true
+      billing_company:
+        formatter: company
+        optional: true

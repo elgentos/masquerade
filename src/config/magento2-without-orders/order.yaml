@@ -1,0 +1,12 @@
+order:
+  sales_order:
+    provider:
+      delete: true
+
+  sales_order_grid:
+    provider:
+      delete: true
+
+  sales_order_address:
+    provider:
+      delete: true

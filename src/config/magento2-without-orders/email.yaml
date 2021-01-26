@@ -1,0 +1,18 @@
+email:
+  email_contact:
+    pk: email_contact_id
+    columns:
+      email:
+        formatter: email
+
+  email_automation:
+    pk: id
+    columns:
+      email:
+        formatter: email
+
+  email_campaign:
+    pk: id
+    columns:
+      email:
+        formatter: email

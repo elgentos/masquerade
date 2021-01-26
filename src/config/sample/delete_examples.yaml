@@ -1,0 +1,14 @@
+delete_examples:
+  table_to_fully_truncate:
+    provider:
+      truncate: true # ignores key constraints, so use it when the data is large and delete would be slow
+  table_to_fully_delete:
+    provider:
+      delete: true
+  table_to_partially_delete:
+    provider:
+      delete: true
+      where: " `is_unit_testing_data` = 0 " # deletes the specified records only
+      # no need to provide columns here, because we're deleting rather than anonymizing
+
+

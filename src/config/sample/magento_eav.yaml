@@ -1,0 +1,24 @@
+eav_example:
+  catalog_product_entity: # specify the base table for the entity
+    pk: entity_id
+    provider: \Elgentos\Masquerade\Provider\Table\Magento2Eav
+    columns:
+      # custom attribute, could be any type
+      my_custom_attribute:
+        formatter:
+          name: lexify
+          value: "?????"
+      # it also does fields in the main table:
+      sku:
+        formatter:
+          name: bothify
+          value: "???####"
+        unique: true
+
+  amasty_order_attribute_entity: # even handle entities provided by 3rd party modules
+    pk: entity_id
+    provider: \Elgentos\Masquerade\Provider\Table\Magento2Eav
+    columns:
+      my_custom_order_attribute:
+        formatter: email
+

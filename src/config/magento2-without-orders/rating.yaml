@@ -1,0 +1,8 @@
+rating:
+  rating_option_vote:
+    pk: vote_id
+    columns:
+      remote_ip:
+        formatter: ipv4
+      remote_ip_long:
+        formatter: randomNumber
