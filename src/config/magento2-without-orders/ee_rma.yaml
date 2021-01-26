@@ -1,0 +1,5 @@
+ee_rma:
+  magento_rma_grid:
+    columns:
+      customer_name:
+        formatter: name
