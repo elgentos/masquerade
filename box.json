@@ -20,7 +20,6 @@
                 "Tests",
                 "doctrine/cache",
                 "doctrine/annotations",
-                "symfony/translation",
                 "nesbot"
             ],
             "in": "vendor"
