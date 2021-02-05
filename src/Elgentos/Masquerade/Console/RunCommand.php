@@ -21,7 +21,7 @@ class RunCommand extends Command
             |
                    by elgentos';
 
-    const VERSION = '0.2.3';
+    const VERSION = '0.2.4';
 
     const DEFAULT_QUERY_PROVIDER = \Elgentos\Masquerade\Provider\Table\Simple::class;
 
