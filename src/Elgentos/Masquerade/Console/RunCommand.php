@@ -137,59 +137,64 @@ class RunCommand extends Command
         $this->output->writeln('');
         $this->output->writeln('Updating ' . $table['name'] . ' using '. $tableProviderClass);
 
-        $tableProvider->setup();
+        try {
+            $tableProvider->setup();
 
-        $totalRows = $tableProvider->count();
-        $progressBar = new ProgressBar($this->output, $totalRows);
-        $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRows));
-        $progressBar->start();
+            $totalRows = $tableProvider->count();
+            $progressBar = new ProgressBar($this->output, $totalRows);
+            $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRows));
+            $progressBar->start();
 
-        $primaryKey = $tableProvider->getPrimaryKey();
+            $primaryKey = $tableProvider->getPrimaryKey();
 
-        $tableProvider->query()->chunk(100, function ($rows) use ($table, $progressBar, $primaryKey, $tableProvider) {
-            foreach ($rows as $row) {
-                $updates = [];
-                foreach ($tableProvider->columns() as $columnName => $columnData) {
-                    $formatter = Arr::get($columnData, 'formatter.name');
-                    $formatterData = Arr::get($columnData, 'formatter');
-                    $providerClassName = Arr::get($columnData, 'provider', false);
+            $tableProvider->query()->chunk(100,
+                function ($rows) use ($table, $progressBar, $primaryKey, $tableProvider) {
+                    foreach ($rows as $row) {
+                        $updates = [];
+                        foreach ($tableProvider->columns() as $columnName => $columnData) {
+                            $formatter = Arr::get($columnData, 'formatter.name');
+                            $formatterData = Arr::get($columnData, 'formatter');
+                            $providerClassName = Arr::get($columnData, 'provider', false);
 
-                    if (!$formatter) {
-                        $formatter = $formatterData;
-                        $options = [];
-                    } else {
-                        $options = array_values(array_slice($formatterData, 1));
-                    }
+                            if (!$formatter) {
+                                $formatter = $formatterData;
+                                $options = [];
+                            } else {
+                                $options = array_values(array_slice($formatterData, 1));
+                            }
 
-                    if (!$formatter) {
-                        continue;
-                    }
+                            if (!$formatter) {
+                                continue;
+                            }
 
-                    if ($formatter == 'fixed') {
-                        $updates[$columnName] = Arr::first($options);
-                        continue;
-                    }
+                            if ($formatter == 'fixed') {
+                                $updates[$columnName] = Arr::first($options);
+                                continue;
+                            }
 
-                    try {
-                        $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
-                        if (Arr::get($columnData, 'unique', false)) {
-                            $updates[$columnName] = $fakerInstance->unique()->{$formatter}(...$options);
-                        } elseif (Arr::get($columnData, 'optional', false)) {
-                            $updates[$columnName] = $fakerInstance->optional()->{$formatter}(...$options);
-                        } else {
-                            $updates[$columnName] = $fakerInstance->{$formatter}(...$options);
+                            try {
+                                $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
+                                if (Arr::get($columnData, 'unique', false)) {
+                                    $updates[$columnName] = $fakerInstance->unique()->{$formatter}(...$options);
+                                } elseif (Arr::get($columnData, 'optional', false)) {
+                                    $updates[$columnName] = $fakerInstance->optional()->{$formatter}(...$options);
+                                } else {
+                                    $updates[$columnName] = $fakerInstance->{$formatter}(...$options);
+                                }
+                            } catch (\InvalidArgumentException $e) {
+                                // If InvalidArgumentException is thrown, formatter is not found, use null instead
+                                $updates[$columnName] = null;
+                            }
                         }
-                    } catch (\InvalidArgumentException $e) {
-                        // If InvalidArgumentException is thrown, formatter is not found, use null instead
-                        $updates[$columnName] = null;
+                        $tableProvider->update($row->{$primaryKey}, $updates);
+                        $progressBar->advance();
                     }
-                }
-                $tableProvider->update($row->{$primaryKey}, $updates);
-                $progressBar->advance();
-            }
-        });
+                });
 
-        $progressBar->finish();
+            $progressBar->finish();
+        } catch (\Exception $e) {
+            $this->output->writeln($e->getMessage());
+        }
 
         $this->output->writeln('');
     }
