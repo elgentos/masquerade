@@ -1,0 +1,8 @@
+login-as-customer:
+  magento_login_as_customer_log:
+    pk: log_id
+    columns:
+      user_name:
+        formatter: username
+      customer_email:
+        formatter: email
