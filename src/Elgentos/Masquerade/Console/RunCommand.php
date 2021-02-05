@@ -147,7 +147,8 @@ class RunCommand extends Command
 
             $primaryKey = $tableProvider->getPrimaryKey();
 
-            $tableProvider->query()->chunk(100,
+            $tableProvider->query()->chunk(
+                100,
                 function ($rows) use ($table, $progressBar, $primaryKey, $tableProvider) {
                     foreach ($rows as $row) {
                         $updates = [];
@@ -189,7 +190,8 @@ class RunCommand extends Command
                         $tableProvider->update($row->{$primaryKey}, $updates);
                         $progressBar->advance();
                     }
-                });
+                }
+            );
 
             $progressBar->finish();
         } catch (\Exception $e) {
