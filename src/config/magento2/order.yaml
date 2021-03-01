@@ -65,3 +65,12 @@ order:
       vat_id:
         formatter: vat
         optional: true
+
+  sales_order_payment:
+    columns:
+      last_trans_id:
+        formatter: fixed
+        value:
+      additional_information:
+        formatter: fixed
+        value:
