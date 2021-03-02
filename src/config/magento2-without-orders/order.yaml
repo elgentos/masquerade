@@ -10,3 +10,7 @@ order:
   sales_order_address:
     provider:
       delete: true
+
+  sales_order_payment:
+    provider:
+      delete: true
