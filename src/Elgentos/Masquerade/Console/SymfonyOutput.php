@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Elgentos\Masquerade\Console;
 
 use Elgentos\Masquerade\Output;
@@ -124,6 +123,4 @@ class SymfonyOutput implements Output
             ProgressBar::getFormatDefinition($originalFormat) . " %message%"
         );
     }
-
-
 }

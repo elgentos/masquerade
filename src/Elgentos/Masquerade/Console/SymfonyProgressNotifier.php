@@ -3,7 +3,6 @@
 
 namespace Elgentos\Masquerade\Console;
 
-
 use Elgentos\Masquerade\ProgressNotifier;
 use Symfony\Component\Console\Helper\ProgressBar;
 
