@@ -205,6 +205,8 @@ class RunCommand extends Command
         } catch (\Exception $e) {
             $this->output->errorAndExit($e->getMessage());
         }
+
+        $this->output->info('');
     }
 
     private function generateRecord(iterable $columns): \Generator

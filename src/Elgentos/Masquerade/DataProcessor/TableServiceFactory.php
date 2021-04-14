@@ -36,9 +36,8 @@ class TableServiceFactory
         }
 
         if (!isset($this->serviceCache[$tableName])) {
-            $fullTableName = $this->database->getTablePrefix() . $tableName;
             $this->serviceCache[$tableName] = new TableService(
-                $fullTableName,
+                $tableName,
                 $this->database,
                 $this->fetchTableColumns($tableName)
             );
@@ -52,8 +51,11 @@ class TableServiceFactory
         $query = $this->database->query()
             ->from('information_schema.columns')
             ->select(['column_name', 'column_key'])
-            ->where('table_name', '=', $tableName)
+            ->where('table_name', '=', $this->database->getTablePrefix() . $tableName)
             ->whereRaw('table_schema = DATABASE()');
+
+        $query->grammar = clone $query->grammar;
+        $query->grammar->setTablePrefix('');
 
         return $query->pluck('column_key', 'column_name')->toArray();
     }

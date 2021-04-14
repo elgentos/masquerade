@@ -83,7 +83,6 @@ class TableService
     public function queryWithJoinAndCondition(string $table, string $joinColumn, string $condition): Builder
     {
         $query = $this->query();
-        $table = $this->database->getTablePrefix() . $table;
         $query->join(
             sprintf("%s as joined", $table),
             sprintf('main.%s', $joinColumn),
@@ -373,7 +372,7 @@ class TableService
 
         return $this->database->getPdo()->prepare(sprintf(
             'INSERT INTO `%s` (%s) VALUES %s ON DUPLICATE KEY UPDATE %s',
-            $this->tableName,
+            $this->database->getTablePrefix() . $this->tableName,
             implode(",", $columnNames),
             str_repeat("$placeholders,", $totalRows - 1) . $placeholders,
             implode(",", $onUpdate)

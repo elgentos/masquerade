@@ -97,11 +97,11 @@ class SymfonyOutput implements Output
 
     public function progressNotifier(string $label, int $totalRows): ProgressNotifier
     {
-        $output = $this->symfonyOutput->section();
-        $output->writeln(sprintf('<comment>%s</comment>', $label), OutputInterface::VERBOSITY_NORMAL);
+        $this->symfonyOutput->writeln(['']);
 
-        $progressBar = new ProgressBar($output, $totalRows);
-        $progressBar->setOverwrite(true);
+        $this->symfonyOutput->writeln(sprintf('<comment>%s</comment>', $label), OutputInterface::VERBOSITY_NORMAL);
+
+        $progressBar = new ProgressBar($this->symfonyOutput, $totalRows);
         $formatId = uniqid('progress_notifier');
         $this->setupFormatBasedOnVerbosity($formatId, $this->symfonyOutput->getVerbosity());
         $progressBar->setFormat($formatId);
