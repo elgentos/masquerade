@@ -88,9 +88,9 @@ class EavDataProcessor implements DataProcessor
             );
         }
 
-        $attributes = $this->attributesByTable();
+        $attributesByTable = $this->attributesByTable();
 
-        if (!$attributes) {
+        if (!$attributesByTable) {
             $this->output->warning('Skipping EAV attribute processing for [%s]', $this->configuration['name']);
             return;
         }
@@ -99,7 +99,7 @@ class EavDataProcessor implements DataProcessor
 
         $eavRanges = $this->mainTableService->tableRanges($primaryKey, $batchSize, $condition);
 
-        foreach ($attributes as $tableName => $attributes) {
+        foreach ($attributesByTable as $tableName => $attributes) {
             $eavTableService = $this->tableServiceFactory->create($tableName);
             $eavValueId = $eavTableService->getPrimaryKey();
             $progress = $this->output->progressNotifier(sprintf('Updating EAV data in [%s]', $tableName), 0);
