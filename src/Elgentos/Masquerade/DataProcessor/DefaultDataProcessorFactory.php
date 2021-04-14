@@ -13,15 +13,12 @@ class DefaultDataProcessorFactory implements DataProcessorFactory
         Output $output,
         TableServiceFactory $tableServiceFactory,
         array $tableConfiguration
-    ): DataProcessor
-    {
+    ): DataProcessor {
         try {
             $processor = $this->instantiateProcessor($tableServiceFactory, $tableConfiguration, $output);
-        }
-        catch (TableDoesNotExistsException $e) {
+        } catch (TableDoesNotExistsException $e) {
             throw $e;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $output->errorAndExit($e->getMessage());
         }
 
@@ -53,8 +50,7 @@ class DefaultDataProcessorFactory implements DataProcessorFactory
         TableServiceFactory $tableServiceFactory,
         array $tableConfiguration,
         Output $output
-    ): DataProcessor
-    {
+    ): DataProcessor {
         $tableService = $tableServiceFactory->create($tableConfiguration['name']);
 
         if ($tableConfiguration['eav'] ?? false) {

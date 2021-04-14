@@ -3,7 +3,6 @@
 
 namespace Elgentos\Masquerade;
 
-
 interface ProgressNotifier
 {
     /**

@@ -245,7 +245,6 @@ class RunCommand extends Command
                 yield null;
             }
         }
-
     }
 
     /**

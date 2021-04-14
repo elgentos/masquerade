@@ -3,7 +3,6 @@
 
 namespace Elgentos\Masquerade\DataProcessor;
 
-
 use Elgentos\Masquerade\Output;
 use Elgentos\Masquerade\ProgressNotifier;
 use Illuminate\Database\Connection;

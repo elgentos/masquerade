@@ -3,7 +3,6 @@
 
 namespace Elgentos\Masquerade\DataProcessor;
 
-
 use Elgentos\Masquerade\DataProcessor;
 use Elgentos\Masquerade\Output;
 
@@ -51,8 +50,7 @@ class EavDataProcessor implements DataProcessor
         TableService $tableService,
         TableServiceFactory $tableServiceFactory,
         array $configuration
-    )
-    {
+    ) {
         $this->output = $output;
         $this->configuration = $configuration;
         $this->mainTableService = $tableService;
@@ -80,7 +78,6 @@ class EavDataProcessor implements DataProcessor
         $condition = $this->configuration['provider']['where'] ?? '';
 
         if ($mainColumns) {
-
             $this->mainTableService->updateTable(
                 $mainColumns,
                 $condition,
@@ -152,7 +149,6 @@ class EavDataProcessor implements DataProcessor
                 $progress->updateStatus('Importing into database');
                 $insertStatement->execute($parameters);
                 $progress->advanceBy($currentRows);
-
             }
 
             $progress->complete();
