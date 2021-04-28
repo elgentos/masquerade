@@ -62,8 +62,8 @@ You can use the Magento2Eav table type to treat EAV attributes just like normal 
 ```yaml
 products:
   catalog_product_entity: # specify the base table of the entity
+    eav: true
     provider:
-      name: \Elgentos\Masquerade\Provider\Table\Magento2Eav
       where: "sku != 'TESTPRODUCT'" # you can still use 'where' and 'delete'
     columns:
       my_custom_attribute:
@@ -72,7 +72,7 @@ products:
         formatter: email
 
   catalog_category_entity:
-    provider: \Elgentos\Masquerade\Provider\Table\Magento2Eav # shortcut if not using 'where' or 'delete'
+    eav: true
     columns:
       description: # refer to EAV attributes like normal columns
         formatter: paragraph
@@ -119,7 +119,44 @@ customer:
 
 ### Custom Table Type Providers
 
-Some systems have linked tables containing related data - eg. Magento's EAV system, Drupal's entity fields and Wordpress's post metadata tables.  You can provide custom table types like this:
+Some systems have linked tables containing related data - eg. Magento's EAV system, Drupal's entity fields and Wordpress's post metadata tables.  You can provide custom table types. 
+In order to do it you need to implement 2 interfaces:
+ - `Elgentos\Masquerade\DataProcessorFactory` is to instantiate your custom processor. It receives table service factory, output object and whole array of yaml configuration specified for your table.
+ - `Elgentos\Masquerade\DataProcessor` is to process various operations required by run command like:
+
+   - `truncate` should truncate table in provided table via configuration
+   - `delete` should delete table in provided table via configuration
+   - `updateTable` should update table with values provided by generator based on columns definitions in the configuration. 
+     See `Elgentos\Masquerade\DataProcessor\RegularTableProcessor::updateTable` for a reference.
+
+
+First you need to start with a factory that will instantiate an actual processor
+
+An example file `.masquerade/Custom/WoopTableFactory.php`;
+```php
+<?php
+
+namespace Custom;
+
+use Elgentos\Masquerade\DataProcessor;
+use Elgentos\Masquerade\DataProcessor\TableServiceFactory;
+use Elgentos\Masquerade\DataProcessorFactory;
+use Elgentos\Masquerade\Output;
+ 
+class WoopTableFactory implements DataProcessorFactory 
+{
+
+    public function create(
+        Output $output, 
+        TableServiceFactory $tableServiceFactory,
+        array $tableConfiguration
+    ): DataProcessor {
+        $tableService = $tableServiceFactory->create($tableConfiguration['name']);
+
+        return new WoopTable($output, $tableService, $tableConfiguration);
+    }
+}
+```
 
 An example file `.masquerade/Custom/WoopTable.php`;
 
@@ -128,29 +165,62 @@ An example file `.masquerade/Custom/WoopTable.php`;
 
 namespace Custom;
 
-use Elgentos\Masquerade\Provider\Table\Base;
+use Elgentos\Masquerade\DataProcessor;
+use Elgentos\Masquerade\DataProcessor\TableService;
+use Elgentos\Masquerade\Output;
 
-class WoopTable extends Base {
+class WoopTable implements DataProcessor
+{
+    /** @var Output */
+    private $output;
 
-    public function setup() // do any one-off work - eg. delete/truncate, find EAV attributes, create temporary tables
+    /** @var array */
+    private $configuration;
 
-    public function columns() // return a list of the column names that will be faked - these don't have to be real database fields
+    /** @var TableService */
+    private $tableService;
 
-    public function getPrimaryKey() // if you inherit \Elgentos\Masquerade\Provider\Table\Simple, this will be guessed
+    public function __construct(Output $output, TableService $tableService, array $configuration)
+    {
+        $this->output = $output;
+        $this->tableService = $tableService;
+        $this->configuration = $configuration;
+    }
 
-    public function update($primaryKey, [field=>value, ...]) // update a record - handle the update of any special field types here
-
-    public function query() // return an Illuminate database query object giving all the records you want to affect, and selecting all the columns
+    public function truncate(): void
+    {
+        $this->tableService->truncate();
+    }
+    
+    public function delete(): void
+    {
+        $this->tableService->delete($this->configuration['provider']['where'] ?? '');
+    }
+    
+    public function updateTable(int $batchSize, callable $generator): void
+    {
+        $columns = $this->tableService->filterColumns($this->configuration['columns'] ?? []);
+        $primaryKey = $this->configuration['pk'] ?? $this->tableService->getPrimaryKey();
+        
+        $this->tableService->updateTable(
+            $columns, 
+            $this->configuration['provider']['where'] ?? '', 
+            $primaryKey,
+            $this->output,
+            $generator,
+            $batchSize
+        );
+    }
 }
 ```
 
-And then use it in your YAML file. A provider needs to be set on the table level, and can be a simple class name, or a set of options which are available to your class.  See the documentation in the 'Base' class, and the code for the 'Simple' table type for more details.
+And then use it in your YAML file. A processor factory needs to be set on the table level, and can be a simple class name, or a set of options which are available to your class.
 
 ```yaml
 customer:
   customer_entity:
-    provider:
-      class: \Custom\WoopTable
+    processor_factory: \Custom\WoopTableFactory
+    some_custom_config:
       option1: "test"
       option2: false
     columns:
@@ -190,6 +260,7 @@ Options:
       --locale[=LOCALE]      Locale for Faker data [en_US]
       --group[=GROUP]        Comma-separated groups to run masquerade on [all]
       --with-integrity       Run with foreign key checks enabled
+      --batch-size=BATCH-SIZE  Batch size to use for anonymization [default: 500]
 ```
 
 You can also set these variables in a `config.yaml` file in the same location as where you run masquerade from, for example:

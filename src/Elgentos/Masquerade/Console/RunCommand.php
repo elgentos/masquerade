@@ -2,7 +2,12 @@
 
 namespace Elgentos\Masquerade\Console;
 
+use Elgentos\Masquerade\DataProcessor\DefaultDataProcessorFactory;
+use Elgentos\Masquerade\DataProcessor\TableDoesNotExistsException;
+use Elgentos\Masquerade\DataProcessor\TableServiceFactory;
+use Elgentos\Masquerade\DataProcessorFactory;
 use Elgentos\Masquerade\Helper\Config;
+use Elgentos\Masquerade\Output;
 use Faker\Generator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,7 +28,7 @@ class RunCommand extends Command
 
     const VERSION = '0.2.5';
 
-    const DEFAULT_QUERY_PROVIDER = \Elgentos\Masquerade\Provider\Table\Simple::class;
+    const DEFAULT_DATA_PROCESSOR_FACTORY = DefaultDataProcessorFactory::class;
 
     protected $config;
 
@@ -33,7 +38,7 @@ class RunCommand extends Command
     protected $input;
 
     /**
-     * @var OutputInterface
+     * @var Output
      */
     protected $output;
 
@@ -72,6 +77,11 @@ class RunCommand extends Command
     protected $fakerInstanceCache;
 
     /**
+     * @var TableServiceFactory
+     */
+    private $tableServiceFactory;
+
+    /**
      *
      */
     protected function configure()
@@ -91,7 +101,8 @@ class RunCommand extends Command
             ->addOption('locale', null, InputOption::VALUE_OPTIONAL, 'Locale for Faker data [en_US]')
             ->addOption('group', null, InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]')
             ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]')
-            ->addOption('with-integrity', null, InputOption::VALUE_NONE, 'Run with foreign key checks enabled');
+            ->addOption('with-integrity', null, InputOption::VALUE_NONE, 'Run with foreign key checks enabled')
+            ->addOption('batch-size', null, InputOption::VALUE_REQUIRED, 'Batch size to use for anonymization', 500);
     }
 
     /**
@@ -102,12 +113,14 @@ class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
-        $this->output = $output;
+        $this->output = SymfonyOutput::createFromSymfonyOutput($output);
 
         $this->setup();
 
-        $this->output->writeln(self::LOGO);
-        $this->output->writeln('                        v' . self::VERSION);
+        $output->writeln(self::LOGO);
+        $output->writeln('                        v' . self::VERSION);
+
+        $startTime = new \DateTime();
 
         foreach ($this->config as $groupName => $tables) {
             if (!empty($this->group) && !in_array($groupName, $this->group)) {
@@ -119,7 +132,7 @@ class RunCommand extends Command
             }
         }
 
-        $this->output->writeln('Done anonymizing');
+        $this->output->success('Anonymization complete in [%s]', $startTime->diff(new \DateTime())->format('%h:%i:%s'));
     }
 
     /**
@@ -127,78 +140,132 @@ class RunCommand extends Command
      */
     private function fakeData(array $table) : void
     {
-        $tableProviderData = Arr::get($table, 'provider', []);
-        if (is_string($tableProviderData)) {
-            $tableProviderData = ['class' => $tableProviderData]; // just a class rather than array of options
-        }
-        $tableProviderClass = Arr::get($tableProviderData, 'class', self::DEFAULT_QUERY_PROVIDER);
-        $tableProvider = new $tableProviderClass($this->input, $this->output, $this->db, $table, $tableProviderData);
+        $table['provider'] = $table['provider'] ?? [];
 
-        $this->output->writeln('');
-        $this->output->writeln('Updating ' . $table['name'] . ' using '. $tableProviderClass);
+        if (is_string($table['provider'])) {
+            $this->output->errorAndExit(
+                'Provided configuration "%s" is not compatible with new version of masquerade, please use processor_factory instead.',
+                $table['provider']
+            );
+        }
+
+        $dataProcessorFactoryClass = $table['processor_factory'] ?? self::DEFAULT_DATA_PROCESSOR_FACTORY;
+
+        if (!class_exists($dataProcessorFactoryClass)) {
+            $this->output->errorAndExit(
+                'Provided %s class does not exists.',
+                $dataProcessorFactoryClass
+            );
+        }
+
+        if (!in_array(DataProcessorFactory::class, class_implements($dataProcessorFactoryClass))) {
+            $this->output->errorAndExit(
+                'Provided %s class does not implement required %s interface.',
+                $dataProcessorFactoryClass,
+                DataProcessorFactory::class
+            );
+        }
+
+        /** @var DataProcessorFactory $dataProcessorFactory */
+        $dataProcessorFactory = new $dataProcessorFactoryClass();
+        try {
+            $dataProcessor = $dataProcessorFactory->create($this->output, $this->tableServiceFactory, $table);
+        } catch (TableDoesNotExistsException $exception) {
+            $this->output->info('Table %s does not exists. Skipping...', $table['name']);
+            return;
+        }
+
+
+        $this->output->debug(
+            'Updating table using the following data',
+            [
+                'processor' => get_class($dataProcessor),
+                'configuration' => $table
+            ]
+        );
+
+        $isIntegrityImportant = $this->input->hasOption('with-integrity') || $table['provider']['where'] ?? '';
+        $isDelete = $table['provider']['delete'] ?? false;
+        $isTruncate = $table['provider']['truncate'] ?? false;
+
+        if ($isIntegrityImportant && $isDelete) {
+            $this->output->info('Deleting records from %s table', $table);
+            $dataProcessor->delete();
+            $this->output->success('Records have been deleted from %s table', $table);
+            return;
+        } elseif ($isDelete || $isTruncate) {
+            $this->output->info('Truncating records from %s table', $table);
+            $dataProcessor->truncate();
+            $this->output->success('Records have been truncated from %s table', $table);
+            return;
+        }
 
         try {
-            $tableProvider->setup();
-
-            $totalRows = $tableProvider->count();
-            $progressBar = new ProgressBar($this->output, $totalRows);
-            $progressBar->setRedrawFrequency($this->calculateRedrawFrequency($totalRows));
-            $progressBar->start();
-
-            $primaryKey = $tableProvider->getPrimaryKey();
-
-            $tableProvider->query()->chunk(
-                100,
-                function ($rows) use ($table, $progressBar, $primaryKey, $tableProvider) {
-                    foreach ($rows as $row) {
-                        $updates = [];
-                        foreach ($tableProvider->columns() as $columnName => $columnData) {
-                            $formatter = Arr::get($columnData, 'formatter.name');
-                            $formatterData = Arr::get($columnData, 'formatter');
-                            $providerClassName = Arr::get($columnData, 'provider', false);
-
-                            if (!$formatter) {
-                                $formatter = $formatterData;
-                                $options = [];
-                            } else {
-                                $options = array_values(array_slice($formatterData, 1));
-                            }
-
-                            if (!$formatter) {
-                                continue;
-                            }
-
-                            if ($formatter == 'fixed') {
-                                $updates[$columnName] = Arr::first($options);
-                                continue;
-                            }
-
-                            try {
-                                $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
-                                if (Arr::get($columnData, 'unique', false)) {
-                                    $updates[$columnName] = $fakerInstance->unique()->{$formatter}(...$options);
-                                } elseif (Arr::get($columnData, 'optional', false)) {
-                                    $updates[$columnName] = $fakerInstance->optional()->{$formatter}(...$options);
-                                } else {
-                                    $updates[$columnName] = $fakerInstance->{$formatter}(...$options);
-                                }
-                            } catch (\InvalidArgumentException $e) {
-                                // If InvalidArgumentException is thrown, formatter is not found, use null instead
-                                $updates[$columnName] = null;
-                            }
-                        }
-                        $tableProvider->update($row->{$primaryKey}, $updates);
-                        $progressBar->advance();
-                    }
-                }
-            );
-
-            $progressBar->finish();
+            $dataProcessor->updateTable((int)$this->input->getOption('batch-size'), \Closure::fromCallable([$this, 'generateRecord']));
         } catch (\Exception $e) {
-            $this->output->writeln($e->getMessage());
+            $this->output->errorAndExit($e->getMessage());
         }
 
-        $this->output->writeln('');
+        $this->output->info('');
+    }
+
+    private function generateRecord(iterable $columns): \Generator
+    {
+        foreach ($columns as $columnData) {
+            $formatter = $columnData['formatter']['name'] ?? null;
+            $formatterData = $columnData['formatter'] ?? [];
+            $providerClassName = $columnData['provider'] ?? false;
+
+            if (!$formatter) {
+                $formatter = $formatterData;
+                $options = [];
+            } else {
+                $options = array_values(array_slice($formatterData, 1));
+            }
+
+            if (!$formatter) {
+                yield null;
+                continue;
+            }
+
+            if ($formatter == 'fixed') {
+                yield Arr::first($options);
+                continue;
+            }
+
+            try {
+                $fakerInstance = $this->getFakerInstance($columnData, $providerClassName);
+                if ($columnData['unique'] ?? false) {
+                    $fakerInstance = $fakerInstance->unique();
+                } elseif ($columnData['optional'] ?? false) {
+                    $fakerInstance = $fakerInstance->optional();
+                }
+
+                yield $this->asScalar($fakerInstance->{$formatter}(...$options));
+            } catch (\InvalidArgumentException $e) {
+                // If InvalidArgumentException is thrown, formatter is not found, use null instead
+                yield null;
+            }
+        }
+    }
+
+    /**
+     * Transforms non scalar values to scalar ones
+     *
+     * @return scalar
+     */
+    private function asScalar($value)
+    {
+        if (is_scalar($value) || $value === null) {
+            return $value;
+        }
+
+        if ($value instanceof \DateTime) {
+            return $value->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+        }
+
+        $this->output->debug('Unexpected type', ['value' => $value]);
+        $this->output->errorAndExit('Unknown type has been provided from generator');
     }
 
     /**
@@ -213,7 +280,7 @@ class RunCommand extends Command
         $this->platformName = $this->input->getOption('platform') ?? $databaseConfig['platform'] ?? null;
 
         if (!$this->platformName) {
-            throw new \Exception('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
+            $this->output->errorAndExit('No platformName set, use option --platform or set it in ' . Config::CONFIG_YAML);
         }
 
         $this->config = $this->configHelper->getConfig($this->platformName);
@@ -238,7 +305,7 @@ class RunCommand extends Command
             $errors[] = 'No username defined';
         }
         if (count($errors) > 0) {
-            throw new \Exception(implode(PHP_EOL, $errors));
+            $this->output->errorAndExit(implode(PHP_EOL, $errors));
         }
 
         $capsule = new Capsule;
@@ -255,9 +322,13 @@ class RunCommand extends Command
 
         $this->db = $capsule->getConnection();
         if (!$this->input->getOption('with-integrity')) {
-            $this->output->writeln('[Foreign key constraint checking is off - deletions will not affect linked tables]');
+            $this->output->info('[Foreign key constraint checking is off - deletions will not affect linked tables]');
             $this->db->statement('SET FOREIGN_KEY_CHECKS=0');
         }
+
+        $this->db->statement("SET GLOBAL sql_mode=''");
+
+        $this->tableServiceFactory = new TableServiceFactory($this->db);
 
         $this->locale = $this->input->getOption('locale') ?? $databaseConfig['locale'] ?? 'en_US';
 
@@ -287,7 +358,7 @@ class RunCommand extends Command
 
         if (is_object($provider)) {
             if (!$provider instanceof \Faker\Provider\Base) {
-                throw new \Exception('Class ' . get_class($provider) . ' is not an instance of \Faker\Provider\Base');
+                $this->output->errorAndExit('Class ' . get_class($provider) . ' is not an instance of \Faker\Provider\Base');
             }
             $fakerInstance->addProvider($provider);
         }
@@ -295,28 +366,5 @@ class RunCommand extends Command
         $this->fakerInstanceCache[$key] = $fakerInstance;
 
         return $fakerInstance;
-    }
-
-    /**
-     * @param int $totalRows
-     * @return int
-     */
-    private function calculateRedrawFrequency(int $totalRows) : int
-    {
-        $percentage = 10;
-
-        if ($totalRows < 100) {
-            $percentage = 10;
-        } elseif ($totalRows < 1000) {
-            $percentage = 1;
-        } elseif ($totalRows < 10000) {
-            $percentage = 0.1;
-        } elseif ($totalRows < 100000) {
-            $percentage = 0.01;
-        } elseif ($totalRows < 1000000) {
-            $percentage = 0.001;
-        }
-
-        return (int) ceil($totalRows * $percentage);
     }
 }
