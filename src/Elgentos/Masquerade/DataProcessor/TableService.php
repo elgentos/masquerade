@@ -48,22 +48,26 @@ class TableService
     /**
      * Create a query with base select from this table
      *
+     * @param bool $withoutAlias do not use alias for a main table
      * @return Builder
      */
-    public function query(): Builder
+    public function query(bool $withoutAlias = false): Builder
     {
-        return $this->database->query()->from(sprintf("%s as main", $this->tableName));
+        $tableExpression = $withoutAlias ? $this->tableName : sprintf("%s as main", $this->tableName);
+
+        return $this->database->query()->from($tableExpression);
     }
 
     /**
      * Returns base select query with attached condition
      *
      * @param string $condition
+     * @param bool $withoutAlias do not use alias for a main table
      * @return Builder
      */
-    public function queryWithCondition(string $condition): Builder
+    public function queryWithCondition(string $condition, bool $withoutAlias = false): Builder
     {
-        $query = $this->query();
+        $query = $this->query($withoutAlias);
 
         if ($condition) {
             $query->whereRaw($condition);
@@ -105,7 +109,7 @@ class TableService
      */
     public function delete(string $condition): void
     {
-        $this->queryWithCondition($condition)->delete();
+        $this->queryWithCondition($condition, true)->delete();
     }
 
     /**
@@ -141,7 +145,7 @@ class TableService
      */
     public function truncate(): void
     {
-        $this->query()->truncate();
+        $this->query(true)->truncate();
     }
 
     /**
