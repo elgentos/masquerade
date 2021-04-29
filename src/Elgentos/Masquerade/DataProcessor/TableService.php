@@ -52,7 +52,7 @@ class TableService
      */
     public function query(): Builder
     {
-        return $this->database->query()->from(sprintf("%s as main", $this->tableName));
+        return $this->database->query()->from($this->tableName);
     }
 
     /**
