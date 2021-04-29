@@ -24,7 +24,8 @@ class DefaultDataProcessorFactory implements DataProcessorFactory
 
         $whereCondition = $tableConfiguration['where'] ?? '';
 
-        foreach ($tableConfiguration['columns'] as $column => $columnData) {
+        $columns = $tableConfiguration['columns'] ?? [];
+        foreach ($columns as $column => $columnData) {
             if ($columnData['nullColumnBeforeRun'] ?? false) {
                 if (strpos($whereCondition, $column) !== false) {
                     $output->warning(

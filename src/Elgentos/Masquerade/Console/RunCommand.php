@@ -168,10 +168,11 @@ class RunCommand extends Command
 
         /** @var DataProcessorFactory $dataProcessorFactory */
         $dataProcessorFactory = new $dataProcessorFactoryClass();
+        $tableName = $table['name'];
         try {
             $dataProcessor = $dataProcessorFactory->create($this->output, $this->tableServiceFactory, $table);
         } catch (TableDoesNotExistsException $exception) {
-            $this->output->info('Table %s does not exists. Skipping...', $table['name']);
+            $this->output->info('Table %s does not exists. Skipping...', $tableName);
             return;
         }
 
@@ -189,14 +190,14 @@ class RunCommand extends Command
         $isTruncate = $table['provider']['truncate'] ?? false;
 
         if ($isIntegrityImportant && $isDelete) {
-            $this->output->info('Deleting records from %s table', $table);
+            $this->output->info('Deleting records from %s table', $tableName);
             $dataProcessor->delete();
-            $this->output->success('Records have been deleted from %s table', $table);
+            $this->output->success('Records have been deleted from %s table', $tableName);
             return;
         } elseif ($isDelete || $isTruncate) {
-            $this->output->info('Truncating records from %s table', $table);
+            $this->output->info('Truncating records from %s table', $tableName);
             $dataProcessor->truncate();
-            $this->output->success('Records have been truncated from %s table', $table);
+            $this->output->success('Records have been truncated from %s table', $tableName);
             return;
         }
 
