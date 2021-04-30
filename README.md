@@ -281,7 +281,7 @@ Check out the wiki on [How to run Masquerade nightly with Gitlab CI/CD](https://
 #### Magento 2 out-of-the-box rule-set
 
 ```
-$ php masquerade.phar list --platform=magento2
+$ php masquerade.phar groups --platform=magento2
 
 +----------+------------+--------------------------+--------------------+---------------------+
 | Platform | Group      | Table                    | Column             | Formatter           |
