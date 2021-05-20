@@ -50,7 +50,7 @@ class TableServiceFactory
     {
         $query = $this->database->query()
             ->from('information_schema.columns')
-            ->select(['column_name', 'column_key'])
+            ->select(['column_name as column_name', 'column_key as column_key'])
             ->where('table_name', '=', $this->database->getTablePrefix() . $tableName)
             ->whereRaw('table_schema = DATABASE()');
 
