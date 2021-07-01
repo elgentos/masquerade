@@ -4,6 +4,11 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+build:
+	composer update
+	chmod +x build.sh
+	./build.sh
+
 override_dh_usrlocal:
 
 %:
