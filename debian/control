@@ -1,9 +1,9 @@
 Source: masquerade
 Priority: optional
 Maintainer: Peter Jaap Blaakmeer <peterjaap@elgentos.nl>
-Build-Depends: debhelper (>= 8.0.0)
+Build-Depends: debhelper (>= 8.0.0), git, php7.3-cli, php7.3-mbstring,
+    php7.3-xml, composer, ca-certificates, wget
 Standards-Version: 3.9.4
-Section: libs
 Homepage: https://github.com/elgentos/masquerade
 Vcs-Git: git@github.com:elgentos/masquerade.git
 

@@ -391,35 +391,38 @@ $ php masquerade.phar groups --platform=magento2
 
 ### Building from source
 
-To build the phar from source you can use the `build.sh` script. Note that it depends on [Box](https://github.com/box-project/box2) so you need to make sure that it is available first.
+To build the phar from source you can use the `build.sh` script. Note that it depends on [Box](https://github.com/box-project/box) which is included in this repository.
 
 ```
-cd masquerade
-# Find the latest version here: https://github.com/box-project/box2#as-a-phar-recommended
-curl -LSs https://box-project.github.io/box2/installer.php | php
-composer update
-chmod u+x build.sh
-./build.sh
-bin/masquerade
+# git clone https://github.com/elgentos/masquerade
+# cd masquerade
+# composer update
+# chmod +x build.sh
+# ./build.sh
+# bin/masquerade
 ```
 
-## Generating a new release changelog
+### Debian Packaging
 
+To build a deb for this project run:
+
+```
+# apt-get install debhelper cowbuilder git-buildpackage
+# export ARCH=amd64
+# export DIST=buster
+# cowbuilder --create --distribution buster --architecture amd64 --basepath /var/cache/pbuilder/base-$DIST-amd64.cow --mirror http://ftp.debian.org/debian/ --components=main
+# echo "USENETWORK=yes" > ~/.pbuilderrc
+# git clone https://github.com/elgentos/masquerade
+# cd masquerade
+# gbp buildpackage --git-pbuilder --git-dist=$DIST --git-arch=$ARCH --git-ignore-branch -us -uc -sa --git-ignore-new
+```
+
+To generate a new `debian/changelog` for a new release:
 ```
 export BRANCH=master
 export VERSION=$(date "+%Y%m%d.%H%M%S")
 gbp dch --debian-tag="%(version)s" --new-version=$VERSION --debian-branch $BRANCH --release --commit
 ```
-
-### Packaging
-
-To build a deb that installs the phar in the dist directory run:
-
-```
-gbp buildpackage --git-pbuilder --git-dist=xenial --git-arch=amd64 --git-ignore-branch --git-ignore-new
-```
-
-Make sure you have a [cow environment](https://wiki.debian.org/git-pbuilder) configured for your branch and distribution. Keep in mind that the packaging does not build a new phar file, so if you want to package your local revision for testing please run `./build.sh` and copy the created `bin/masquerade` to `dist/masquerade.phar` first.
 
 #### Credits
 
