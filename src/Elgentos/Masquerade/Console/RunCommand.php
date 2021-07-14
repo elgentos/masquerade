@@ -327,7 +327,7 @@ class RunCommand extends Command
             $this->db->statement('SET FOREIGN_KEY_CHECKS=0');
         }
 
-        $this->db->statement("SET GLOBAL sql_mode=''");
+        $this->db->statement("SET SESSION sql_mode=''");
 
         $this->tableServiceFactory = new TableServiceFactory($this->db);
 
