@@ -122,5 +122,9 @@ class SymfonyOutput implements Output
             $formatName,
             ProgressBar::getFormatDefinition($originalFormat) . " %message%"
         );
+        ProgressBar::setFormatDefinition(
+            $formatName . "_nomax",
+            ProgressBar::getFormatDefinition($originalFormat . "_nomax") . " %message%"
+        );
     }
 }
