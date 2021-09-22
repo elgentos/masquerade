@@ -396,7 +396,7 @@ To build the phar from source you can use the `build.sh` script. Note that it de
 ```
 # git clone https://github.com/elgentos/masquerade
 # cd masquerade
-# composer update
+# composer install
 # chmod +x build.sh
 # ./build.sh
 # bin/masquerade
