@@ -427,4 +427,4 @@ gbp dch --debian-tag="%(version)s" --new-version=$VERSION --debian-branch $BRANC
 #### Credits
 
 - Built by [elgentos](https://github.com/elgentos)
-- Logo by [Caneco](https://twitter.com.com/caneco)
+- Logo by [Caneco](https://twitter.com/caneco)
