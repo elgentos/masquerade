@@ -1,0 +1,2 @@
+product_review:
+    columns: { external_email: { formatter: email } }
