@@ -26,7 +26,7 @@ class RunCommand extends Command
             |
                    by elgentos';
 
-    const VERSION = '0.3.5';
+    const VERSION = '1.0.0';
 
     const DEFAULT_DATA_PROCESSOR_FACTORY = DefaultDataProcessorFactory::class;
 
