@@ -14,6 +14,7 @@ Point Masquerade to a database, give it a rule-set defined in YAML and Masquerad
 ### Out-of-the-box supported frameworks
 
 - Magento 2
+- Shopware 6
 
 ### Customization
 
