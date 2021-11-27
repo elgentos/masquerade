@@ -77,7 +77,9 @@ class IdentifyCommand extends Command
         $this->setup();
 
         $this->identifiers = [
+            'first_name',
             'firstName',
+            'last_name',
             'lastName',
             'address',
             'suffix',
@@ -95,6 +97,8 @@ class IdentifyCommand extends Command
             'company',
             'remote_ip',
             'ip_address',
+            'ipaddress',
+            'credit_card',
             'creditCard',
             'transaction'
         ];
@@ -105,7 +109,7 @@ class IdentifyCommand extends Command
         foreach ($tableNames as $tableName) {
             $columns = $this->db->getSchemaBuilder()->getColumnListing($tableName);
             foreach ($columns as $columnName) {
-                if ($formatter = $this->strposa($columnName, $this->identifiers)) {
+                if ($formatter = $this->striposa($columnName, $this->identifiers)) {
                     $exampleValues = array_filter(array_map(function ($exampleValue) use ($columnName) {
                         $string = $exampleValue->{$columnName};
                         if (strlen($string) > 30) {
@@ -144,7 +148,7 @@ class IdentifyCommand extends Command
         $driver = $this->input->getOption('driver') ?? $databaseConfig['driver'] ?? 'mysql';
         $database = $this->input->getOption('database') ?? $databaseConfig['database'];
         $username = $this->input->getOption('username') ?? $databaseConfig['username'];
-        $password = $this->input->getOption('password') ?? isset($databaseConfig['password']) ? $databaseConfig['password'] : '';
+        $password = $this->input->getOption('password') ?? $databaseConfig['password'] ?? '';
         $prefix = $this->input->getOption('prefix') ?? $databaseConfig['prefix'] ?? '';
         $charset = $this->input->getOption('charset') ?? $databaseConfig['charset'] ?? 'utf8';
 
@@ -236,13 +240,13 @@ class IdentifyCommand extends Command
      * @param int $offset
      * @return bool
      */
-    protected function strposa($haystack, $needle, $offset = 0)
+    protected function striposa($haystack, $needle, int $offset = 0)
     {
         if (!is_array($needle)) {
             $needle = array($needle);
         }
         foreach ($needle as $query) {
-            if (strpos($haystack, $query, $offset) !== false) {
+            if (stripos($haystack, $query, $offset) !== false) {
                 return $query;
             }
         }
