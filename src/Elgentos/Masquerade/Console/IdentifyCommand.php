@@ -11,6 +11,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Yaml\Yaml;
 
 class IdentifyCommand extends Command
 {
@@ -126,6 +128,27 @@ class IdentifyCommand extends Command
         $candidatesTable->setHeaders(['Table', 'Column', 'Suggested formatter', 'Example values']);
         $candidatesTable->setRows($candidates);
         $candidatesTable->render();
+
+        $yamls = [];
+        foreach ($candidates as $candidate) {
+            list($table, $column, $formatter, $examples) = $candidate;
+            $helper = $this->getHelper('question');
+            $filename = 'src/config/' . $this->platformName . '/' . $table . '.yaml';
+            if (empty($examples)) {
+                $examples = 'None';
+            }
+            $question = new ConfirmationQuestion(sprintf("<comment>Example values: %s</comment>\nDo you want to add <options=bold>%s</> with formatter <options=bold>%s</> to <options=bold>%s</>?</question> <info>[Y/n]</info> ", print_r($examples, true), $table . '.' . $column, $formatter, $filename), true);
+
+            if ($helper->ask($input, $output, $question)) {
+                $yamls[$filename][$table]['columns'][$column]['formatter'] = $formatter;
+            }
+        }
+
+        foreach ($yamls as $filename => $content) {
+            @mkdir(dirname($filename), 0777, true);
+            file_put_contents($filename, Yaml::dump($content));
+            $this->output->writeln(sprintf('Wrote instructions to %s', $filename));
+        }
     }
 
     /**
