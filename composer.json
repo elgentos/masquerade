@@ -4,7 +4,7 @@
   "require": {
     "php": "^7.2",
     "doctrine/dbal": "~2.3",
-    "elgentos/parser": "~2.5",
+    "elgentos/parser": "~3.0",
     "fzaninotto/faker": "^1.7",
     "illuminate/database": "^6.20",
     "symfony/console": "^4.1",
