@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
 
 class IdentifyCommand extends Command
@@ -133,14 +134,16 @@ class IdentifyCommand extends Command
         foreach ($candidates as $candidate) {
             list($table, $column, $formatter, $examples) = $candidate;
             $helper = $this->getHelper('question');
-            $filename = 'src/config/' . $this->platformName . '/' . $table . '.yaml';
             if (empty($examples)) {
                 $examples = 'None';
             }
-            $question = new ConfirmationQuestion(sprintf("<comment>Example values: %s</comment>\nDo you want to add <options=bold>%s</> with formatter <options=bold>%s</> to <options=bold>%s</>?</question> <info>[Y/n]</info> ", print_r($examples, true), $table . '.' . $column, $formatter, $filename), true);
+            $question = new ConfirmationQuestion(sprintf("<comment>Example values: %s</comment>\nDo you want to add <options=bold>%s</> with formatter <options=bold>%s</>?</question> <info>[Y/n]</info> ", print_r($examples, true), $table . '.' . $column, $formatter), true);
 
             if ($helper->ask($input, $output, $question)) {
-                $yamls[$filename][$table]['columns'][$column]['formatter'] = $formatter;
+                $question = new Question(sprintf('What group do you want to add it to? <info>[%s]</> ', $table), $table);
+                $group = $helper->ask($input, $output, $question);
+                $filename = 'src/config/' . $this->platformName . '/' . $group . '.yaml';
+                $yamls[$filename][$group][$table][$column]['formatter'] = $formatter;
             }
         }
 

@@ -1,2 +1,2 @@
 user:
-    columns: { first_name: { formatter: first_name }, last_name: { formatter: last_name }, email: { formatter: email } }
+    user: { first_name: { formatter: first_name }, last_name: { formatter: last_name }, email: { formatter: email } }

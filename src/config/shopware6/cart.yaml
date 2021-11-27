@@ -1,2 +1,0 @@
-cart:
-    columns: { country_id: { formatter: country } }
