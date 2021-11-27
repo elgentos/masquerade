@@ -106,13 +106,13 @@ class IdentifyCommand extends Command
             $columns = $this->db->getSchemaBuilder()->getColumnListing($tableName);
             foreach ($columns as $columnName) {
                 if ($formatter = $this->strposa($columnName, $this->identifiers)) {
-                    $exampleValues = array_map(function ($exampleValue) use ($columnName) {
+                    $exampleValues = array_filter(array_map(function ($exampleValue) use ($columnName) {
                         $string = $exampleValue->{$columnName};
                         if (strlen($string) > 30) {
                             $string = substr($string, 0, 30) . '...';
                         }
-                        return $string;
-                    }, $this->db->table($tableName)->whereNotNull($columnName)->distinct()->inRandomOrder()->limit(3)->get([$columnName])->toArray());
+                        return utf8_encode($string) === $string ? $string : false;
+                    }, $this->db->table($tableName)->whereNotNull($columnName)->distinct()->inRandomOrder()->limit(3)->get([$columnName])->toArray()));
                     $candidates[] = [$tableName, $columnName, $formatter, implode(', ', $exampleValues)];
                 }
             }
