@@ -134,16 +134,18 @@ class IdentifyCommand extends Command
         foreach ($candidates as $candidate) {
             list($table, $column, $formatter, $examples) = $candidate;
             $helper = $this->getHelper('question');
+            $default = true;
             if (empty($examples)) {
                 $examples = 'None';
+                $default = false;
             }
-            $question = new ConfirmationQuestion(sprintf("<comment>Example values: %s</comment>\nDo you want to add <options=bold>%s</> with formatter <options=bold>%s</>?</question> <info>[Y/n]</info> ", print_r($examples, true), $table . '.' . $column, $formatter), true);
+            $question = new ConfirmationQuestion(sprintf("<comment>Example values: %s</comment>\nDo you want to add <options=bold>%s</> with formatter <options=bold>%s</>?</question> <info>%s</info> ", print_r($examples, true), $table . '.' . $column, $formatter, $default ? '[Y/n]' : '[y/N]'), $default);
 
             if ($helper->ask($input, $output, $question)) {
                 $question = new Question(sprintf('What group do you want to add it to? <info>[%s]</> ', $table), $table);
                 $group = $helper->ask($input, $output, $question);
                 $filename = 'src/config/' . $this->platformName . '/' . $group . '.yaml';
-                $yamls[$filename][$group][$table][$column]['formatter'] = $formatter;
+                $yamls[$filename][$group][$table]['columns'][$column]['formatter'] = $formatter;
             }
         }
 
