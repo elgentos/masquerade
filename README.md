@@ -28,7 +28,7 @@ For example, to override the `admin.yaml` for Magento 2, you place a file in `co
 admin:
 ```
 
-### Partial anonymisation
+### Partial anonymization
 
 You can affect only certain records by including a 'where' clause - for example to avoid anonymising certain admin accounts, or to preserve data used in unit tests, like this:
 
@@ -275,118 +275,23 @@ host: localhost
 port: porthere
 ```
 
+### Adding your own config
+
+You can add your own config files for custom tables or tables from 3rd party vendors. Here are a few examples:
+- [Magento 2 Aheadworks YAML file](https://github.com/elgentos/masquerade/wiki/%5BMagento-2%5D-Aheadworks-YAML-file)
+- [Magento 2 Amasty YAML file](https://github.com/elgentos/masquerade/wiki/%5BMagento-2%5D-Amasty-YAML-file)
+- [Shopware 6 Frosh YAML file](https://github.com/elgentos/masquerade/wiki/%5BShopware-6%5D-Frosh-YAML-file)
+
+To generate these kind of files, you can run the `masquerade identify` command. This will look for columns that show a hint of personal identifiable data in the name, such as `name` or `address`.
+
+It will interactively ask you to add it to a config file for the chosen platform.
+
 ### Running it nightly
 
-Check out the wiki on [How to run Masquerade nightly with Gitlab CI/CD](https://github.com/elgentos/masquerade/wiki/How-to-run-Masquerade-nightly-with-Gitlab-CI-CD)
-
-#### Magento 2 out-of-the-box rule-set
-
-```
-$ php masquerade.phar groups --platform=magento2
-
-+----------+------------+--------------------------+--------------------+---------------------+
-| Platform | Group      | Table                    | Column             | Formatter           |
-+----------+------------+--------------------------+--------------------+---------------------+
-| magento2 | invoice    | sales_invoice            | customer_note      | sentence            |
-| magento2 | invoice    | sales_invoice_comment    | comment            | sentence            |
-| magento2 | invoice    | sales_invoice_grid       | customer_email     | email               |
-| magento2 | invoice    | sales_invoice_grid       | customer_name      | name                |
-| magento2 | invoice    | sales_invoice_grid       | billing_name       | name                |
-| magento2 | invoice    | sales_invoice_grid       | shipping_address   | address             |
-| magento2 | invoice    | sales_invoice_grid       | billing_address    | address             |
-| magento2 | creditmemo | sales_creditmemo         | customer_note      | sentence            |
-| magento2 | creditmemo | sales_creditmemo_comment | comment            | sentence            |
-| magento2 | creditmemo | sales_creditmemo_grid    | customer_email     | email               |
-| magento2 | creditmemo | sales_creditmemo_grid    | customer_name      | name                |
-| magento2 | creditmemo | sales_creditmemo_grid    | billing_name       | name                |
-| magento2 | creditmemo | sales_creditmemo_grid    | shipping_address   | address             |
-| magento2 | creditmemo | sales_creditmemo_grid    | billing_address    | address             |
-| magento2 | review     | review_detail            | nickname           | firstName           |
-| magento2 | review     | review_detail            | title              | sentence            |
-| magento2 | review     | review_detail            | detail             | paragraph           |
-| magento2 | newsletter | newsletter_subscriber    | subscriber_email   | email               |
-| magento2 | order      | sales_order              | customer_email     | email               |
-| magento2 | order      | sales_order              | customer_firstname | firstName           |
-| magento2 | order      | sales_order              | customer_lastname  | lastName            |
-| magento2 | order      | sales_order              | customer_dob       | dateTimeThisCentury |
-| magento2 | order      | sales_order              | customer_taxvat    | vat                 |
-| magento2 | order      | sales_order              | remote_ip          | ipv4                |
-| magento2 | order      | sales_order              | customer_note      | sentence            |
-| magento2 | order      | sales_order_grid         | customer_email     | email               |
-| magento2 | order      | sales_order_grid         | customer_name      | name                |
-| magento2 | order      | sales_order_grid         | shipping_name      | name                |
-| magento2 | order      | sales_order_grid         | billing_name       | name                |
-| magento2 | order      | sales_order_grid         | shipping_address   | address             |
-| magento2 | order      | sales_order_grid         | billing_address    | address             |
-| magento2 | order      | sales_order_address      | email              | email               |
-| magento2 | order      | sales_order_address      | firstname          | firstName           |
-| magento2 | order      | sales_order_address      | lastname           | lastName            |
-| magento2 | order      | sales_order_address      | company            | company             |
-| magento2 | order      | sales_order_address      | street             | streetAddress       |
-| magento2 | order      | sales_order_address      | city               | city                |
-| magento2 | order      | sales_order_address      | postcode           | postcode            |
-| magento2 | order      | sales_order_address      | telephone          | phoneNumber         |
-| magento2 | order      | sales_order_address      | fax                | phoneNumber         |
-| magento2 | order      | sales_order_address      | vat_id             | vat                 |
-| magento2 | quote      | quote                    | customer_email     | email               |
-| magento2 | quote      | quote                    | customer_firstname | firstName           |
-| magento2 | quote      | quote                    | customer_lastname  | lastName            |
-| magento2 | quote      | quote                    | customer_dob       | dateTimeThisCentury |
-| magento2 | quote      | quote                    | customer_taxvat    | vat                 |
-| magento2 | quote      | quote                    | remote_ip          | ipv4                |
-| magento2 | quote      | quote_address            | email              | email               |
-| magento2 | quote      | quote_address            | firstname          | firstName           |
-| magento2 | quote      | quote_address            | lastname           | lastName            |
-| magento2 | quote      | quote_address            | company            | company             |
-| magento2 | quote      | quote_address            | street             | streetAddress       |
-| magento2 | quote      | quote_address            | city               | city                |
-| magento2 | quote      | quote_address            | postcode           | postcode            |
-| magento2 | quote      | quote_address            | telephone          | phoneNumber         |
-| magento2 | quote      | quote_address            | fax                | phoneNumber         |
-| magento2 | quote      | quote_address            | vat_id             | vat                 |
-| magento2 | admin      | admin_user               | firstname          | firstName           |
-| magento2 | admin      | admin_user               | lastname           | lastName            |
-| magento2 | admin      | admin_user               | email              | email               |
-| magento2 | admin      | admin_user               | username           | firstName           |
-| magento2 | admin      | admin_user               | password           | password            |
-| magento2 | email      | email_contact            | email              | email               |
-| magento2 | email      | email_automation         | email              | email               |
-| magento2 | email      | email_campaign           | email              | email               |
-| magento2 | customer   | customer_entity          | email              | email               |
-| magento2 | customer   | customer_entity          | firstname          | firstName           |
-| magento2 | customer   | customer_entity          | lastname           | lastName            |
-| magento2 | customer   | customer_address_entity  | firstname          | firstName           |
-| magento2 | customer   | customer_address_entity  | lastname           | lastName            |
-| magento2 | customer   | customer_address_entity  | company            | company             |
-| magento2 | customer   | customer_address_entity  | street             | streetAddress       |
-| magento2 | customer   | customer_address_entity  | city               | city                |
-| magento2 | customer   | customer_address_entity  | postcode           | postcode            |
-| magento2 | customer   | customer_address_entity  | telephone          | phoneNumber         |
-| magento2 | customer   | customer_address_entity  | fax                | phoneNumber         |
-| magento2 | customer   | customer_grid_flat       | name               | name                |
-| magento2 | customer   | customer_grid_flat       | firstname          | firstName           |
-| magento2 | customer   | customer_grid_flat       | email              | email               |
-| magento2 | customer   | customer_grid_flat       | dob                | dateTimeThisCentury |
-| magento2 | customer   | customer_grid_flat       | billing_full       | address             |
-| magento2 | customer   | customer_grid_flat       | shipping_full      | address             |
-| magento2 | customer   | customer_grid_flat       | billing_firstname  | firstName           |
-| magento2 | customer   | customer_grid_flat       | billing_lastname   | lastName            |
-| magento2 | customer   | customer_grid_flat       | billing_telephone  | phoneNumber         |
-| magento2 | customer   | customer_grid_flat       | billing_postcode   | postcode            |
-| magento2 | customer   | customer_grid_flat       | billing_street     | streetAddress       |
-| magento2 | customer   | customer_grid_flat       | billing_city       | city                |
-| magento2 | customer   | customer_grid_flat       | billing_fax        | phoneNumber         |
-| magento2 | customer   | customer_grid_flat       | billing_vat_id     | vat                 |
-| magento2 | customer   | customer_grid_flat       | billing_company    | company             |
-| magento2 | shipment   | sales_shipment           | customer_note      | sentence            |
-| magento2 | shipment   | sales_shipment_comment   | comment            | sentence            |
-| magento2 | shipment   | sales_shipment_grid      | customer_email     | email               |
-| magento2 | shipment   | sales_shipment_grid      | customer_name      | name                |
-| magento2 | shipment   | sales_shipment_grid      | shipping_name      | name                |
-| magento2 | shipment   | sales_shipment_grid      | billing_name       | name                |
-| magento2 | shipment   | sales_shipment_grid      | shipping_address   | address             |
-| magento2 | shipment   | sales_shipment_grid      | billing_address    | address             |
-+----------+------------+--------------------------+--------------------+---------------------+
+Check out the wiki on how to run Masquerade nightly in CI/CD;
+- [Usage with Gitlab CI/CD](https://github.com/elgentos/masquerade/wiki/Usage-with-Gitlab-CI-CD)
+- [Usage with Github Actions](https://github.com/elgentos/masquerade/wiki/Usage-with-Github-Actions)
+- [Usage with Bitbucket Pipelines](https://github.com/elgentos/masquerade/wiki/Usage-with-Bitbucket-Pipelines)
 
 ```
 
