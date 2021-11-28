@@ -28,6 +28,13 @@ For example, to override the `admin.yaml` for Magento 2, you place a file in `co
 admin:
 ```
 
+You can add your own config files for custom tables or tables from 3rd party vendors. Here are a few examples:
+- [Magento 2 Aheadworks YAML file](https://github.com/elgentos/masquerade/wiki/%5BMagento-2%5D-Aheadworks-YAML-file)
+- [Magento 2 Amasty YAML file](https://github.com/elgentos/masquerade/wiki/%5BMagento-2%5D-Amasty-YAML-file)
+- [Shopware 6 Frosh YAML file](https://github.com/elgentos/masquerade/wiki/%5BShopware-6%5D-Frosh-YAML-file)
+
+To generate such files, you can run the `masquerade identify` command. This will look for columns that show a hint of personal identifiable data in the name, such as `name` or `address`. It will interactively ask you to add it to a config file for the chosen platform.
+
 ### Partial anonymization
 
 You can affect only certain records by including a 'where' clause - for example to avoid anonymising certain admin accounts, or to preserve data used in unit tests, like this:
@@ -274,17 +281,6 @@ password: passhere
 host: localhost
 port: porthere
 ```
-
-### Adding your own config
-
-You can add your own config files for custom tables or tables from 3rd party vendors. Here are a few examples:
-- [Magento 2 Aheadworks YAML file](https://github.com/elgentos/masquerade/wiki/%5BMagento-2%5D-Aheadworks-YAML-file)
-- [Magento 2 Amasty YAML file](https://github.com/elgentos/masquerade/wiki/%5BMagento-2%5D-Amasty-YAML-file)
-- [Shopware 6 Frosh YAML file](https://github.com/elgentos/masquerade/wiki/%5BShopware-6%5D-Frosh-YAML-file)
-
-To generate these kind of files, you can run the `masquerade identify` command. This will look for columns that show a hint of personal identifiable data in the name, such as `name` or `address`.
-
-It will interactively ask you to add it to a config file for the chosen platform.
 
 ### Running it nightly
 
