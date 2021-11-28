@@ -293,8 +293,6 @@ Check out the wiki on how to run Masquerade nightly in CI/CD;
 - [Usage with Github Actions](https://github.com/elgentos/masquerade/wiki/Usage-with-Github-Actions)
 - [Usage with Bitbucket Pipelines](https://github.com/elgentos/masquerade/wiki/Usage-with-Bitbucket-Pipelines)
 
-```
-
 ### Building from source
 
 To build the phar from source you can use the `build.sh` script. Note that it depends on [Box](https://github.com/box-project/box) which is included in this repository.
