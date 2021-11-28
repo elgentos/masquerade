@@ -1,0 +1,4 @@
+log:
+  log_entry:
+    provider:
+      delete: true

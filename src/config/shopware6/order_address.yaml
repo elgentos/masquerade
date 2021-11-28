@@ -1,2 +1,2 @@
 order_address:
-    order_address: { columns: { company: { formatter: company }, first_name: { formatter: first_name }, last_name: { formatter: last_name }, street: { formatter: street }, zipcode: { formatter: zipcode }, city: { formatter: city }, phone_number: { formatter: phone } } }
+    order_address: { columns: { company: { formatter: company }, title: { formatter: prefixMale }, first_name: { formatter: first_name }, last_name: { formatter: last_name }, street: { formatter: street }, zipcode: { formatter: zipcode }, city: { formatter: city }, phone_number: { formatter: phone } } }
