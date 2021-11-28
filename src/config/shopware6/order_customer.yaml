@@ -1,2 +1,2 @@
 order_customer:
-    order_customer: { columns: { email: { formatter: email }, first_name: { formatter: first_name }, last_name: { formatter: last_name }, company: { formatter: company }, remote_address: { formatter: address } } }
+    order_customer: { columns: { email: { formatter: email }, first_name: { formatter: first_name }, last_name: { formatter: last_name }, company: { formatter: company }, remote_address: { formatter: remote_ip } } }
