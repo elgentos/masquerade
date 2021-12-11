@@ -26,7 +26,7 @@ class RunCommand extends Command
             |
                    by elgentos';
 
-    const VERSION = '1.0.2';
+    const VERSION = '1.1.0';
 
     const DEFAULT_DATA_PROCESSOR_FACTORY = DefaultDataProcessorFactory::class;
 
@@ -108,9 +108,9 @@ class RunCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->input = $input;
         $this->output = SymfonyOutput::createFromSymfonyOutput($output);
@@ -133,6 +133,8 @@ class RunCommand extends Command
         }
 
         $this->output->success('Anonymization complete in [%s]', $startTime->diff(new \DateTime())->format('%h:%i:%s'));
+
+        return 0;
     }
 
     /**

@@ -2,13 +2,13 @@
   "name": "elgentos/masquerade",
   "description": "Framework-agnostic database seeder with fake data",
   "require": {
-    "php": "^7.2",
-    "doctrine/dbal": "~2.3",
+    "php": "^7.4|^8",
+    "doctrine/dbal": "~3.2",
     "elgentos/parser": "~3.0",
-    "fzaninotto/faker": "^1.7",
-    "illuminate/database": "^6.20",
-    "symfony/console": "^4.1",
-    "symfony/yaml": "^4.1"
+    "illuminate/database": "^8.75",
+    "symfony/console": "^5.4",
+    "symfony/yaml": "^5.4",
+    "fakerphp/faker": "^1.17"
   },
   "license": "MIT",
   "authors": [

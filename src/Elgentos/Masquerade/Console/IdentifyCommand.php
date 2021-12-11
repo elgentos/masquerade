@@ -72,7 +72,7 @@ class IdentifyCommand extends Command
             ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->input = $input;
         $this->output = $output;
@@ -154,6 +154,8 @@ class IdentifyCommand extends Command
             file_put_contents($filename, Yaml::dump($content));
             $this->output->writeln(sprintf('Wrote instructions to %s', $filename));
         }
+
+        return 0;
     }
 
     /**

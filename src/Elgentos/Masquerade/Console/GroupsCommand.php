@@ -47,10 +47,10 @@ class GroupsCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|null|void
+     * @return int
      * @throws \Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->input = $input;
         $this->output = $output;
@@ -77,6 +77,8 @@ class GroupsCommand extends Command
 
         $outputTable->setRows($rows);
         $outputTable->render();
+
+        return 0;
     }
 
     /**
