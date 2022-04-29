@@ -55,9 +55,9 @@ class Config
     public function checkIfConcrete($content)
     {
         $magentoEnvFile = './web/application/config/database.php';
-        if(file_exists($magentoEnvFile)){
+        if (file_exists($magentoEnvFile)) {
             $env = include $magentoEnvFile;
-            if($env){
+            if ($env) {
                 $content['database'] = $env['connections']['concrete']['database'];
                 $content['username'] = $env['connections']['concrete']['username'];
                 $content['password'] = $env['connections']['concrete']['password'];
