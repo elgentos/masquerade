@@ -43,11 +43,39 @@ class Config
         foreach ($dirs as $dir) {
             if (file_exists($dir . '/' . self::CONFIG_YAML)) {
                 $content =  Parser::readFile(self::CONFIG_YAML, $dir);
+                $content = $this->checkIfMagento($content);
                 $config = array_merge($config, $content);
             }
         }
 
         return $config;
+    }
+
+    public function checkIfMagento($content)
+    {
+        $magentoEnvFile = './app/etc/env.php';
+        if(file_exists($magentoEnvFile)){
+            $env = include $magentoEnvFile;
+            if($env){
+                $content['database'] = $env['db']['connection']['default']['dbname'];
+                $content['username'] = $env['db']['connection']['default']['username'];
+                $content['password'] = $env['db']['connection']['default']['password'];
+                $content['platform'] = 'magento2';
+            }
+        }
+
+        //used when building phar for testing
+        $magentoEnvFile = './../app/etc/env.php';
+        if(file_exists($magentoEnvFile)){
+            $env = include $magentoEnvFile;
+            if($env){
+                $content['database'] = $env['db']['connection']['default']['dbname'];
+                $content['username'] = $env['db']['connection']['default']['username'];
+                $content['password'] = $env['db']['connection']['default']['password'];
+                $content['platform'] = 'magento2';
+            }
+        }
+        return $content;
     }
 
     /**
