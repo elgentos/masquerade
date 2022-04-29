@@ -143,7 +143,9 @@ class IdentifyCommand extends Command
             if ($helper->ask($input, $output, $question)) {
                 $question = new Question(sprintf('What group do you want to add it to? <info>[%s]</> ', $table), $table);
                 $group = $helper->ask($input, $output, $question);
-                if(empty($group)) $group = $table;
+                if (empty($group)) {
+                    $group = $table;
+                }
                 $filename = 'src/masquerade/' . $this->platformName . '/' . $group . '.yaml';
                 $yamls[$filename][$group][$table]['columns'][$column]['formatter'] = $formatter;
             }

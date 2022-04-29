@@ -136,7 +136,7 @@ class ExportCommand extends Command
         }
 
         $this->output->success('Anonymization complete in [%s]', $startTime->diff(new \DateTime())->format('%h:%i:%s'));
-        $this->output->success('Db exported in '.rtrim($this->input->getOption('save-to'),'/').'/bk.sql');
+        $this->output->success('Db exported in '.rtrim($this->input->getOption('save-to'), '/').'/bk.sql');
         $this->export();
         return 0;
     }
@@ -145,7 +145,7 @@ class ExportCommand extends Command
     {
         $databaseConfig = $this->configHelper->readConfigFile();
         $tempDbName = $this->$dbPrefix . $databaseConfig['database'];
-        exec('mysqldump -u '.$databaseConfig['username'].' -p'.$databaseConfig['password'].' '.$tempDbName.' > '.rtrim($this->input->getOption('save-to'),'/').'/bk.sql');
+        exec('mysqldump -u '.$databaseConfig['username'].' -p'.$databaseConfig['password'].' '.$tempDbName.' > '.rtrim($this->input->getOption('save-to'), '/').'/bk.sql');
         $this->db->statement('DROP DATABASE IF EXISTS '.$tempDbName.';');
         //todo remove user permisions over temporary databse that is beeing deleted.
     }

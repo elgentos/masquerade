@@ -70,9 +70,9 @@ class Config
     public function checkIfMagento($content)
     {
         $magentoEnvFile = './app/etc/env.php';
-        if(file_exists($magentoEnvFile)){
+        if (file_exists($magentoEnvFile)) {
             $env = include $magentoEnvFile;
-            if($env){
+            if ($env) {
                 $content['database'] = $env['db']['connection']['default']['dbname'];
                 $content['username'] = $env['db']['connection']['default']['username'];
                 $content['password'] = $env['db']['connection']['default']['password'];
@@ -82,9 +82,9 @@ class Config
 
         //used when building phar for testing
         $magentoEnvFile = './../app/etc/env.php';
-        if(file_exists($magentoEnvFile)){
+        if (file_exists($magentoEnvFile)) {
             $env = include $magentoEnvFile;
-            if($env){
+            if ($env) {
                 $content['database'] = $env['db']['connection']['default']['dbname'];
                 $content['username'] = $env['db']['connection']['default']['username'];
                 $content['password'] = $env['db']['connection']['default']['password'];
