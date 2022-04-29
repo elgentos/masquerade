@@ -1,0 +1,4 @@
+Logs:
+  Logs:
+    provider:
+      delete: true

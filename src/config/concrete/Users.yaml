@@ -1,0 +1,8 @@
+Users:
+    Users:
+        columns:
+            uEmail:
+                formatter: email
+                unique: true
+
+

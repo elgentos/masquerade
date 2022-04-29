@@ -44,11 +44,27 @@ class Config
             if (file_exists($dir . '/' . self::CONFIG_YAML)) {
                 $content =  Parser::readFile(self::CONFIG_YAML, $dir);
                 $content = $this->checkIfMagento($content);
+                $content = $this->checkIfConcrete($content);
                 $config = array_merge($config, $content);
             }
         }
 
         return $config;
+    }
+
+    public function checkIfConcrete($content)
+    {
+        $magentoEnvFile = './web/application/config/database.php';
+        if(file_exists($magentoEnvFile)){
+            $env = include $magentoEnvFile;
+            if($env){
+                $content['database'] = $env['connections']['concrete']['database'];
+                $content['username'] = $env['connections']['concrete']['username'];
+                $content['password'] = $env['connections']['concrete']['password'];
+                $content['platform'] = 'concrete';
+            }
+        }
+        return $content;
     }
 
     public function checkIfMagento($content)
