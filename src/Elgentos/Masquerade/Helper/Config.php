@@ -12,6 +12,7 @@ class Config
     protected $configDirs = [
         __DIR__ . '/../../../config',
         'src/config/',
+        'src/masquerade/',
         '~/.masquerade/config',
         '~/.config/masquerade',
         'config',
