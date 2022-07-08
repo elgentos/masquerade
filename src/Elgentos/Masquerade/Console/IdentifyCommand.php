@@ -256,7 +256,7 @@ class IdentifyCommand extends Command
         }
 
         $tableNames = array_map(function ($tableName) {
-            return $this->str_replace_first($this->prefix, null, $tableName);
+            return $this->str_replace_first($this->prefix, '', $tableName);
         }, $tableNames);
 
         $tableNames = array_diff($tableNames, $excludedTableNames);

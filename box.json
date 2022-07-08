@@ -1,9 +1,8 @@
 {
     "alias": "masquerade.phar",
-    "chmod": "0755",
     "compactors": [
-        "Herrera\\Box\\Compactor\\Json",
-        "Herrera\\Box\\Compactor\\Php"
+        "KevinGH\\Box\\Compactor\\Json",
+        "KevinGH\\Box\\Compactor\\Php"
     ],
     "compression": "GZ",
     "directories": [
@@ -25,7 +24,5 @@
             "in": "vendor"
         }
     ],
-    "main": "bin/masquerade",
-    "output": "dist/masquerade.phar",
-    "stub": true
+    "output": "dist/masquerade.phar"
 }
