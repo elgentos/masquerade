@@ -335,7 +335,7 @@ class RunCommand extends Command
 
         $this->locale = $this->input->getOption('locale') ?? $databaseConfig['locale'] ?? 'en_US';
 
-        $this->group = array_filter(array_map('trim', explode(',', $this->input->getOption('group'))));
+        $this->group = array_filter(array_map('trim', explode(',', (string)$this->input->getOption('group'))));
     }
 
     /**
