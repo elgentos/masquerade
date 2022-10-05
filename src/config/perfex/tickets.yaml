@@ -1,0 +1,11 @@
+tickets:
+  tbltickets:
+    columns:
+      email:
+        formatter: email
+  tbltickets_pipe_log  :
+    columns:
+      email_to:
+        formatter: email
+      name:
+        formatter: name

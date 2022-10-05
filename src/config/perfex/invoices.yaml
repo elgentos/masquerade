@@ -1,0 +1,33 @@
+invoices:
+  tblinvoices:
+    columns:
+      deleted_customer_name:
+        formatter: name
+      billing_street:
+        formatter: streetAddress
+      billing_city:
+        formatter: city
+      billing_zip:
+        formatter: postcode
+      billing_state:
+        delete: true
+      billing_country:
+        formatter: country
+      shipping_street:
+        formatter: streetAddress
+      shipping_city:
+        formatter: city
+      shipping_zip:
+        formatter: postcode
+      shipping_state:
+        delete: true
+      shipping_country:
+        formatter: country
+  tblitemable:
+    columns:
+      long_description:
+        formatter: name
+  tblitems:
+    columns:
+      long_description:
+        formatter: name

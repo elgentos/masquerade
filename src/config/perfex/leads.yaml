@@ -1,0 +1,27 @@
+leads:
+  tblleads:
+    columns:
+      company:
+        formatter: company
+      name:
+        formatter: name
+      phonenumber:
+        formatter: phoneNumber
+      city:
+        formatter: city
+      zip:
+        formatter: postcode
+      state:
+        delete: true
+      address:
+        formatter: streetAddress
+      website:
+        delete: true
+      email:
+        formatter: email
+      description:
+        formatter: sentence
+  tblleads_email_integration:
+    columns:
+      email:
+        formatter: email

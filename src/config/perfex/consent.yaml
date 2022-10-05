@@ -1,0 +1,11 @@
+consent:
+  tblconsents:
+    columns:
+      ip:
+        formatter: ipv4
+      staff_name:
+        formatter: name
+  tblconsent_purposes:
+    columns:
+      name:
+        formatter: name

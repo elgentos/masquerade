@@ -1,0 +1,13 @@
+staff:
+  tblstaff:
+    columns:
+      firstname:
+        formatter: firstname
+      lastname:
+        formatter: lastname
+      facebook:
+        delete: true
+      linkedin:
+        delete: true
+      phonenumber:
+        formatter: phoneNumber

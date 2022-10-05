@@ -1,0 +1,9 @@
+tasks:
+  tbltask_comments:
+    columns:
+      content:
+        formatter: sentence
+  tbltasks  :
+    columns:
+      description:
+        formatter: sentence

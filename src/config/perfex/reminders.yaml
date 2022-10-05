@@ -1,0 +1,5 @@
+reminders:
+  tblreminders:
+    columns:
+      description:
+        formatter: sentence
