@@ -1,0 +1,6 @@
+departments:
+  tbldepartments:
+    columns:
+      imap_username:
+        formatter: email
+

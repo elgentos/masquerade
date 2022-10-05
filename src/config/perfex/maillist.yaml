@@ -1,0 +1,5 @@
+maillist:
+  tblmail_queue:
+    columns:
+      email:
+        formatter: email

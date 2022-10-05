@@ -1,0 +1,9 @@
+notes:
+  tblnotes:
+    columns:
+      description:
+        formatter: sentence
+  tblnotifications:
+    columns:
+      from_fullname:
+        formatter: name

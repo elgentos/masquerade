@@ -1,0 +1,9 @@
+surveys:
+  tblsurveys:
+    columns:
+      fromname:
+        formatter: name
+  tblsurveysemailsendcron:
+    columns:
+      email:
+        formatter: email

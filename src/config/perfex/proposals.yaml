@@ -1,0 +1,29 @@
+proposals:
+  tblproposal_comments:
+    columns:
+      content:
+        formatter: sentence
+  tblproposals:
+    columns:
+      subject:
+        formatter: name
+      proposal_to:
+        formatter: name
+      phone:
+        formatter: phoneNumber
+      city:
+        formatter: city
+      zip:
+        formatter: postcode
+      state:
+        delete: true
+      address:
+        formatter: streetAddress
+      acceptance_firstname:
+        formatter: firstname
+      acceptance_lastname:
+        formatter: lastname
+      acceptance_email:
+        formatter: email
+      acceptance_ip:
+        formatter: ipv4

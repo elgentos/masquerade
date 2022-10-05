@@ -1,0 +1,25 @@
+projects:
+  tblproject_activity:
+    columns:
+      fullname:
+        formatter: name
+      additional_data:
+        formatter: sentence
+  tblproject_notes:
+    columns:
+      content:
+        formatter: sentence
+  tblprojectdiscussioncomments:
+    columns:
+      content:
+        formatter: sentence
+      fullname:
+        formatter: name
+  tblprojectdiscussions:
+    columns:
+      description:
+        formatter: sentence
+  tblprojects:
+    columns:
+      description:
+        formatter: sentence

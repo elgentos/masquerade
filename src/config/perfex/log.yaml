@@ -1,0 +1,19 @@
+log:
+  tblactivity_log:
+    columns:
+      staffid:
+        formatter: name
+  tbllead_activity_log:
+    columns:
+      additional_data:
+        delete: true
+      full_name:
+        formatter: name
+  tblsales_activity:
+    columns:
+      full_name:
+        formatter: name
+  tblviews_tracking:
+    columns:
+      view_ip:
+        formatter: ipv4

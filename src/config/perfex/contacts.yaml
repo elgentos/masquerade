@@ -1,0 +1,13 @@
+contacts:
+  tblcontacts:
+    columns:
+      firstname:
+        formatter: firstname
+      lastname:
+        formatter: lastname
+      email:
+        formatter: email
+      phonenumber:
+        formatter: phoneNumber
+      title:
+        formatter: company

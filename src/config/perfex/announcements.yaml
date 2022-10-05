@@ -1,0 +1,5 @@
+announcements:
+  tblannouncements:
+    columns:
+      name:
+        formatter: name
