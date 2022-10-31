@@ -1,4 +1,4 @@
-masquerade (20210701.073950) UNRELEASED; urgency=medium
+masquerade (20221031.111417) UNRELEASED; urgency=medium
 
   [ peterjaap ]
   * Added yaml files for Magento1 - not correct because it has no EAV support yet!
@@ -195,7 +195,58 @@ masquerade (20210701.073950) UNRELEASED; urgency=medium
   [ Peter Jaap Blaakmeer ]
   * Raised version to 0.3.2
 
- -- peterjaap <peterjaap@elgentos.nl>  Thu, 01 Jul 2021 07:40:06 +0200
+  [ Jules Leynaud ]
+  * Work with composer global require
+
+  [ Lukas Brückner ]
+  * Change MySQL GLOBAL to SESSION mode
+
+  [ Peter Jaap Blaakmeer ]
+  * Raise version to 0.3.3
+  * Upped version to 0.3.4
+
+  [ Christoph Badura ]
+  * fix -vv and higher verbosity level
+  * Correct build instructions
+
+  [ Peter Jaap Blaakmeer ]
+  * Upped version to 0.3.5
+
+  [ Matheus Gontijo ]
+  * Twitter incorrect URL
+
+  [ Peter Jaap Blaakmeer ]
+  * Added support for PHP 8.0
+  * Allow passwordless identify command
+  * Tagged version 1.0.0
+  * Strip non utf8 code examples from identify command overview
+  * Made identification of column names case insensitive
+  * Added asking whether a yaml entry should be created in a custom yaml file
+  * First attempt at creating Shopware 6 config
+  * Fixed identify command
+  * Fixed identify command
+  * Fixed Shopware 6 config
+  * Raised version to 1.0.1
+  * Update README.md
+  * Add forgotten 'columns' key in product_review.yaml
+  * Change address formatter to remote_ip for remote_address
+  * Added prefix (male by default)
+  * Updated Shopware 6 config
+  * Updated README
+  * Updated README
+  * Updated README
+  * Raised version to 1.0.2
+  * Updated outdated packages, upped version to 1.1.0
+  * Added new box.phar to make it compatible with PHP 8.1
+  * Pass empty string as second argument to preg_replace for PHP 8.1 compat
+  * Raise version to 1.2.0 to support PHP 8.1
+  * Up version to 1.2.1
+  * Create CONTRIBUTING.md
+
+  [ Nemo Pohle ]
+  * Add config files for Perfex CRM
+
+ -- Timon de Groot <timon@e11d00df36a3>  Mon, 31 Oct 2022 11:14:43 +0100
 
 masquerade (20180711.080851) xenial; urgency=medium
 
