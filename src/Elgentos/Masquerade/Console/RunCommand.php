@@ -8,6 +8,7 @@ use Elgentos\Masquerade\DataProcessor\TableServiceFactory;
 use Elgentos\Masquerade\DataProcessorFactory;
 use Elgentos\Masquerade\Helper\Config;
 use Elgentos\Masquerade\Output;
+use Elgentos\Masquerade\WorkingDirectory;
 use Faker\Generator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -102,7 +103,8 @@ class RunCommand extends Command
             ->addOption('group', null, InputOption::VALUE_OPTIONAL, 'Which groups to run masquerade on [all]')
             ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]')
             ->addOption('with-integrity', null, InputOption::VALUE_NONE, 'Run with foreign key checks enabled')
-            ->addOption('batch-size', null, InputOption::VALUE_REQUIRED, 'Batch size to use for anonymization', 500);
+            ->addOption('batch-size', null, InputOption::VALUE_REQUIRED, 'Batch size to use for anonymization', 500)
+            ->addOption(WorkingDirectory::OPTION_NAME, null, InputOption::VALUE_OPTIONAL, WorkingDirectory::DESCRIPTION);
     }
 
     /**
@@ -276,6 +278,8 @@ class RunCommand extends Command
      */
     private function setup()
     {
+        WorkingDirectory::change($this->input);
+
         $this->configHelper = new Config($this->input->getOptions());
 
         $databaseConfig = $this->configHelper->readConfigFile();

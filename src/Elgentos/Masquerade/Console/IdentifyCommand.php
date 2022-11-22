@@ -3,6 +3,7 @@
 namespace Elgentos\Masquerade\Console;
 
 use Elgentos\Masquerade\Helper\Config;
+use Elgentos\Masquerade\WorkingDirectory;
 use Faker\Documentor;
 use Faker\Generator;
 use Symfony\Component\Console\Command\Command;
@@ -69,7 +70,8 @@ class IdentifyCommand extends Command
             ->addOption('password', null, InputOption::VALUE_OPTIONAL)
             ->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Database host [localhost]')
             ->addOption('prefix', null, InputOption::VALUE_OPTIONAL, 'Database prefix [empty]')
-            ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]');
+            ->addOption('charset', null, InputOption::VALUE_OPTIONAL, 'Database charset [utf8]')
+            ->addOption(WorkingDirectory::OPTION_NAME, null, InputOption::VALUE_OPTIONAL, WorkingDirectory::DESCRIPTION);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -163,6 +165,8 @@ class IdentifyCommand extends Command
      */
     private function setup()
     {
+        WorkingDirectory::change($this->input);
+
         $this->configHelper = new Config($this->input->getOptions());
         $databaseConfig = $this->configHelper->readConfigFile();
 
