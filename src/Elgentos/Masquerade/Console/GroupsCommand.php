@@ -3,6 +3,7 @@
 namespace Elgentos\Masquerade\Console;
 
 use Elgentos\Masquerade\Helper\Config;
+use Elgentos\Masquerade\WorkingDirectory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -41,7 +42,8 @@ class GroupsCommand extends Command
             ->setName($this->name)
             ->setDescription($this->description)
             ->addOption('config', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'One or more extra config directories for config.yaml or platform configs')
-            ->addOption('platform', null, InputOption::VALUE_REQUIRED);
+            ->addOption('platform', null, InputOption::VALUE_REQUIRED)
+            ->addOption(WorkingDirectory::OPTION_NAME, null, InputOption::VALUE_OPTIONAL, WorkingDirectory::DESCRIPTION);
     }
 
     /**
@@ -86,6 +88,8 @@ class GroupsCommand extends Command
      */
     private function setup()
     {
+        WorkingDirectory::change($this->input);
+
         $this->configHelper = new Config($this->input->getOptions());
         $databaseConfig = $this->configHelper->readConfigFile();
 

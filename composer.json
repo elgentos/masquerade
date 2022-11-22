@@ -8,7 +8,8 @@
     "illuminate/database": "^8.75",
     "symfony/console": "^5.4",
     "symfony/yaml": "^5.4",
-    "fakerphp/faker": "^1.17"
+    "fakerphp/faker": "^1.17",
+    "webmozart/assert": "^1.11"
   },
   "license": "MIT",
   "authors": [
