@@ -86,7 +86,7 @@ class IdentifyCommand extends Command
             'firstName',
             'last_name',
             'lastName',
-            'address',
+            'email',
             'suffix',
             'city',
             'state',
@@ -98,7 +98,6 @@ class IdentifyCommand extends Command
             'longitude',
             'phone',
             'fax',
-            'email',
             'company',
             'remote_ip',
             'ip_address',
@@ -136,7 +135,7 @@ class IdentifyCommand extends Command
         foreach ($candidates as $candidate) {
             list($table, $column, $formatter, $examples) = $candidate;
             $helper = $this->getHelper('question');
-            $default = true;
+            $default = false;
             if (empty($examples)) {
                 $examples = 'None';
                 $default = false;
@@ -146,7 +145,10 @@ class IdentifyCommand extends Command
             if ($helper->ask($input, $output, $question)) {
                 $question = new Question(sprintf('What group do you want to add it to? <info>[%s]</> ', $table), $table);
                 $group = $helper->ask($input, $output, $question);
-                $filename = 'src/config/' . $this->platformName . '/' . $group . '.yaml';
+                if (empty($group)) {
+                    $group = $table;
+                }
+                $filename = 'src/masquerade/' . $this->platformName . '/' . $group . '.yaml';
                 $yamls[$filename][$group][$table]['columns'][$column]['formatter'] = $formatter;
             }
         }

@@ -12,6 +12,7 @@ class Config
     protected $configDirs = [
         __DIR__ . '/../../../config',
         'src/config/',
+        'src/masquerade/',
         '~/.masquerade/config',
         '~/.config/masquerade',
         'config',
@@ -42,11 +43,55 @@ class Config
         foreach ($dirs as $dir) {
             if (file_exists($dir . '/' . self::CONFIG_YAML)) {
                 $content =  Parser::readFile(self::CONFIG_YAML, $dir);
+                $content = $this->checkIfMagento($content);
+                $content = $this->checkIfConcrete($content);
                 $config = array_merge($config, $content);
             }
         }
 
         return $config;
+    }
+
+    public function checkIfConcrete($content)
+    {
+        $magentoEnvFile = './web/application/config/database.php';
+        if (file_exists($magentoEnvFile)) {
+            $env = include $magentoEnvFile;
+            if ($env) {
+                $content['database'] = $env['connections']['concrete']['database'];
+                $content['username'] = $env['connections']['concrete']['username'];
+                $content['password'] = $env['connections']['concrete']['password'];
+                $content['platform'] = 'concrete';
+            }
+        }
+        return $content;
+    }
+
+    public function checkIfMagento($content)
+    {
+        $magentoEnvFile = './app/etc/env.php';
+        if (file_exists($magentoEnvFile)) {
+            $env = include $magentoEnvFile;
+            if ($env) {
+                $content['database'] = $env['db']['connection']['default']['dbname'];
+                $content['username'] = $env['db']['connection']['default']['username'];
+                $content['password'] = $env['db']['connection']['default']['password'];
+                $content['platform'] = 'magento2';
+            }
+        }
+
+        //used when building phar for testing
+        $magentoEnvFile = './../app/etc/env.php';
+        if (file_exists($magentoEnvFile)) {
+            $env = include $magentoEnvFile;
+            if ($env) {
+                $content['database'] = $env['db']['connection']['default']['dbname'];
+                $content['username'] = $env['db']['connection']['default']['username'];
+                $content['password'] = $env['db']['connection']['default']['password'];
+                $content['platform'] = 'magento2';
+            }
+        }
+        return $content;
     }
 
     /**
