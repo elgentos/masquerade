@@ -125,7 +125,7 @@ class RunCommand extends Command
         $startTime = new \DateTime();
 
         foreach ($this->config as $groupName => $tables) {
-            if (!empty($this->group) && !in_array($groupName, $this->group)) {
+            if ((!empty($this->group) && !in_array($groupName, $this->group)) || empty($tables)) {
                 continue;
             }
             foreach ($tables as $tableName => $table) {
